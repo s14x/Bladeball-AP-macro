@@ -1,0 +1,152 @@
+--[[ Protected by Lua Guard ]]
+
+local ReplicatedStorage = cloneref(game:GetService("\082\101\112\108\105\099\097\116\101\100\083\116\111\114\097\103\101")) local Players = cloneref(game:GetService("\080\108\097\121\101\114\115")) local UserInputService = cloneref(game:GetService("\085\115\101\114\073\110\112\117\116\083\101\114\118\105\099\101")) local RunService = cloneref(game:GetService("\082\117\110\083\101\114\118\105\099\101")) local TweenService = cloneref(game:GetService("\084\119\101\101\110\083\101\114\118\105\099\101")) local _lIlIIIIlll = cloneref(game:GetService("\067\111\114\101\071\117\105")) local _llIIllllII = cloneref(game:GetService("\087\111\114\107\115\112\097\099\101")) local HttpService = cloneref(game:GetService("\072\116\116\112\083\101\114\118\105\099\101")) local _lllllIlIll = cloneref(game:GetService("\083\116\097\116\115")) local _IllIIlllIl = cloneref(game:GetService("\067\111\108\108\101\099\116\105\111\110\083\101\114\118\105\099\101")) local _lIllIlllll = Players.LocalPlayer local _lllllllIll = _llIIllllII.CurrentCamera local _lIIlIIllII = "\083\049\052\120\077\097\099\114\111\083\101\116\116\105\110\103\115\046\106\115\111\110" local _IlIIIlIIll = { Spamming = false, Keybind = "\067", SuperSpam = false, SuperSpamClicks = 5, TargetCPS = 50, SafeMode = true, } local _lIlIlIIIll = table.clone(_IlIIIlIIll) local function _IIIIIlllII() if isfile and readfile then if isfile(_lIIlIIllII) then local _lllIlIlIll, _IlllllIlIl = pcall( function () return HttpService:JSONDecode(readfile(_lIIlIIllII)) end
+ ) if _lllIlIlIll and type(_IlllllIlIl) == "\116\097\098\108\101" then for k,v in pairs(_IlIIIlIIll) do if _IlllllIlIl[k] ~= nil then if k == "\075\101\121\098\105\110\100" then local _lllIIlllll = Enum.KeyCode[_IlllllIlIl[k]] if _lllIIlllll then _lIlIlIIIll.Keybind = _lllIIlllll end
+ else _lIlIlIIIll[k] = _IlllllIlIl[k] end
+ end
+ end
+ end
+ end
+ end
+ end
+ local function _lIlIlIlIII() if writefile then local _IlllllIlIl = {} for k,v in pairs(_lIlIlIIIll) do if k == "\075\101\121\098\105\110\100" then _IlllllIlIl[k] = v.Name else _IlllllIlIl[k] = v end
+ end
+ writefile(_lIIlIIllII, HttpService:JSONEncode(_IlllllIlIl)) end
+ end
+ _IIIIIlllII() local _IIIlIllIlI = { keyTable = nil, transformFn = nil, netModule = nil, remoteId = nil, parryHash = nil, parryRemote = nil, parryIndex = 0.5, ready = false, spoofing = false, } do local _IIlIIlIIII = pcall( function () local _IlIIlIlIlI _IlIIlIlIlI = hookfunction(getrenv().debug.info, function (f, t) if not _IIIlIllIlI.spoofing then return _IlIIlIlIlI(f, t) end
+ if type(f) == "\102\117\110\099\116\105\111\110" then return "\091\067\093" elseif f == 4 and t == "\115" then return "\082\101\112\108\105\099\097\116\101\100\083\116\111\114\097\103\101\046\067\111\110\116\114\111\108\108\101\114\115\046\083\119\111\114\100\115\067\111\110\116\114\111\108\108\101\114\032" end
+ return _IlIIlIlIlI(f, t) end
+ ) local _IIlIlIlIlI _IIlIlIlIlI = hookfunction(getrenv().getfenv, function (l) if not _IIIlIllIlI.spoofing then return _IIlIlIlIlI(l) end
+ if l ~= nil and type(l) == "\110\117\109\098\101\114" then if l >= 1 and l <= 10 then return _IIlIlIlIlI(10) end
+ end
+ return _IIlIlIlIlI(l) end
+ ) end
+ ) if not _IIlIIlIIII then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\098\121\112\097\115\115\032\104\111\111\107\115\032\102\097\105\108\101\100\032\116\111\032\105\110\115\116\097\108\108") end
+ end
+ function _IIIlIllIlI.resolve() _IIIlIllIlI.spoofing = true local _lIlIIlIIII, err = pcall( function () local _IIllIIllll = ReplicatedStorage:WaitForChild("\067\111\110\116\114\111\108\108\101\114\115", 15) if not _IIllIIllll then return end
+ local _lIIIlIIlIl for _, child in ipairs(_IIllIIllll:GetChildren()) do if child.Name:sub(1, 16) == "\083\119\111\114\100\115\067\111\110\116\114\111\108\108\101\114" then _lIIIlIIlIl = child break end
+ end
+ if not _lIIIlIIlIl then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\083\119\111\114\100\115\067\111\110\116\114\111\108\108\101\114\032\110\111\116\032\102\111\117\110\100") return end
+ local _IIIllIlllI = _lIIIlIIlIl:WaitForChild("\080\082\089", 15) if not _IIIllIlllI then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\080\082\089\032\109\111\100\117\108\101\032\110\111\116\032\102\111\117\110\100") return end
+ local _IIIIllIIll = require(_IIIllIlllI) local _IIlIlIIIll = debug.getupvalues or getupvalues if not _IIlIlIIIll then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\101\120\101\099\117\116\111\114\032\109\105\115\115\105\110\103\032\103\101\116\117\112\118\097\108\117\101\115") return end
+ local _IIlIIIlllI = _IIlIlIIIll(_IIIIllIIll) if not _IIlIIIlllI or #_IIlIIIlllI < 8 then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\117\110\101\120\112\101\099\116\101\100\032\117\112\118\097\108\117\101\032\099\111\117\110\116") return end
+ _IIIlIllIlI.keyTable = _IIlIIIlllI[3] _IIIlIllIlI.transformFn = _IIlIIIlllI[4] _IIIlIllIlI.netModule = _IIlIIIlllI[6] _IIIlIllIlI.remoteId = _IIlIIIlllI[7] _IIIlIllIlI.parryHash = _IIlIIIlllI[8] local _llIIIllIII = pcall( function () _IIIlIllIlI.parryRemote = _IIIlIllIlI.netModule:RemoteEvent(_IIIlIllIlI.remoteId) end
+ ) if not _llIIIllIII or not _IIIlIllIlI.parryRemote then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\114\101\109\111\116\101\032\114\101\115\111\108\117\116\105\111\110\032\102\097\105\108\101\100") return end
+ _IIIlIllIlI.ready = true end
+ ) _IIIlIllIlI.spoofing = false if not _lIlIIlIIII then warn("\091\080\065\082\082\089\032\080\065\084\067\072\093\032\105\110\105\116\032\101\114\114\111\114\058", tostring(err)) end
+ return _IIIlIllIlI.ready end
+ function _IIIlIllIlI.fire(curveCFrame, screenPositions, mouseLocation) if not _IIIlIllIlI.ready then return false end
+ local _IlllIIlIII = _IIIlIllIlI.keyTable if not _IlllIIlIII then return false end
+ local _IlIllllIll = _IlllIIlIII[3] local _IlIIlIIIll = _IlllIIlIII[1] and _IlllIIlIII[1][_IlIllllIll] if not _IlIIlIIIll then return false end
+ local _IIIIIlllIl, transformed = pcall(_IIIlIllIlI.transformFn, _IlIIlIIIll, "\084\073\077\069") if not _IIIIIlllIl or not transformed then _IIIIIlllIl, transformed = pcall(_IIIlIllIlI.transformFn, _IlIIlIIIll) if not _IIIIIlllIl or not transformed then return false end
+ end
+ local _lllIIlIllI = _llIIllllII:GetServerTimeNow() * 100 local _lllIllllll = tostring(math.floor(_lllIIlIllI)) local _llIllIlIll = {} for i = 1, #_lllIllllll do local _lIIlllIIlI = (i - 1) % #transformed + 1 local _lIIIlIllll = string.byte(transformed, _lIIlllIIlI) local _IlIlllIlll = (string.byte(_lllIllllll, i) + i) % 256 _llIllIlIll[i] = string.char(bit32.bxor(_IlIlllIlll, _lIIIlIllll)) end
+ local _IIlIlIIIlI = table.concat(_llIllIlIll) local _lIllIlllll = pcall( function () _IIIlIllIlI.parryRemote:FireServer( _IIIlIllIlI.parryHash, _IlIIlIIIll, _IIlIlIIIlI, _IIIlIllIlI.parryIndex or 0.5, curveCFrame, screenPositions, mouseLocation, false ) end
+ ) return _lIllIlllll end
+ if not _IIIlIllIlI.resolve() then warn("\070\097\105\108\101\100\032\116\111\032\114\101\115\111\108\118\101\032\112\097\114\114\121\032\112\097\116\099\104") return end
+ local _llIIlIllll = ReplicatedStorage:WaitForChild("\083\104\097\114\101\100"):WaitForChild("\083\119\111\114\100\065\080\073") local _llIllllIIl = { Rate = 180, FEMode = false, Cache = {} } local _IlIIlIIllI = 0 local _IllIlIllIl = false local _IIIlIIIlIl = 0 local _lIIIlIlIlI = false local _lIlIllIlII = 0 local function _IIlIIIIlll() return _lIllIlllll.Character end
+ local function _lIIIIIllII() local _IlIIIllIIl = _IIlIIIIlll() return _IlIIIllIIl and _IlIIIllIIl:FindFirstChildOfClass("\072\117\109\097\110\111\105\100") end
+ local function _lIIlIlIIII(animationtrack, FadeTime) local _llIlIIllll = FadeTime or animationtrack:GetAttribute("\083\116\111\112\070\097\100\101\084\105\109\101") animationtrack:Stop(_llIlIIllll) end
+ local function _IlIIlIIIll(animationtrack) local _lIlIllIIlI = animationtrack:GetAttribute("\080\108\097\121\070\097\100\101\084\105\109\101") local _IIlIIIlIII = animationtrack:GetAttribute("\080\108\097\121\087\101\105\103\104\116") local _IIIllIIlll = animationtrack:GetAttribute("\080\108\097\121\083\112\101\101\100") animationtrack:Play(_lIlIllIIlI, _IIlIIIlIII, _IIIllIIlll) end
+ local function _llIllIlIll(swordName) local _IlIIIllIIl = _IIlIIIIlll() if not _IlIIIllIIl then return nil end
+ if not swordName then return _llIIlIllll.Collection.Default:FindFirstChild("\071\114\097\098\080\097\114\114\121") end
+ if _llIllllIIl.Cache[swordName] then return _llIllllIIl.Cache[swordName] end
+ local _lllIlIlIll, swordData = pcall( function () return ReplicatedStorage.Shared.ReplicatedInstances.Swords.GetSword:Invoke(swordName) end
+ ) if not _lllIlIlIll or not swordData or type(swordData) ~= "\116\097\098\108\101" then _llIllllIIl.Cache[swordName] = _llIIlIllll.Collection.Default:FindFirstChild("\071\114\097\098\080\097\114\114\121") return _llIllllIIl.Cache[swordName] end
+ if not swordData.AnimationType or type(swordData.AnimationType) ~= "\115\116\114\105\110\103" then _llIllllIIl.Cache[swordName] = _llIIlIllll.Collection.Default:FindFirstChild("\071\114\097\098\080\097\114\114\121") return _llIllllIIl.Cache[swordName] end
+ local _lIlIllIIll = _llIIlIllll.Collection for _, object in pairs(_lIlIllIIll:GetChildren()) do if object.Name == swordData.AnimationType then local _IllllIlIII = object:FindFirstChild("\071\114\097\098\080\097\114\114\121") or object:FindFirstChild("\071\114\097\098") if _IllllIlIII then _llIllllIIl.Cache[swordName] = _IllllIlIII return _IllllIlIII end
+ end
+ end
+ _llIllllIIl.Cache[swordName] = _llIIlIllll.Collection.Default:FindFirstChild("\071\114\097\098\080\097\114\114\121") return _llIllllIIl.Cache[swordName] end
+ local function _lIIllllIII() local _IlIIIllIIl = _IIlIIIIlll() if not _IlIIIllIIl then return false end
+ if _IlIIIllIIl:GetAttribute("\083\116\117\110\110\101\100") then return false end
+ local _lIlIllIlll = _lIllIlllll:GetAttribute("\076\111\098\098\121\084\114\097\105\110\105\110\103") and _IlIIIllIIl.Parent == _llIIllllII.Dead if _IlIIIllIIl.Parent ~= _llIIllllII.Alive and not (_lIllIlllll:GetAttribute("\076\111\098\098\121\080\097\114\114\121") or _lIlIllIlll) then return false end
+ if _IlIIIllIIl:GetAttribute("\068\111\078\111\116\080\097\114\114\121") or _IlIIIllIIl:GetAttribute("\067\104\097\114\103\105\110\103\065\100\114\101\110\097\108\105\110\101") and _lIllIlllll.Upgrades["\081\105\045\067\104\097\114\103\101"].Value < 2 then return false end
+ if _lIllIlllll:GetAttribute("\076\111\098\098\121\080\097\114\114\121") and _lIllIlllll:GetAttribute("\073\110\076\111\098\098\121\080\097\114\114\121\067\111\111\108\100\111\119\110") then return false end
+ return true end
+ local function _llIIIllIll() local _IIlIlIIllI = _lIlIlIIIll.SafeMode local _llIllIIlll = _lIIllllIII() local _IIIIlIlIlI = (_llIllIIlll and _IIlIlIIllI) or not _IIlIlIIllI if not _IIIIlIlIlI then return end
+ local _lIIllIIIll = _lIIIIIllII() if not _lIIllIIIll then return end
+ local _llIIIIlIII = _IIlIIIIlll():GetAttribute("\067\117\114\114\101\110\116\108\121\069\113\117\105\112\112\101\100\083\119\111\114\100") local _IllllIlIII = _llIllIlIll(_llIIIIlIII) if not _IllllIlIII then _IllllIlIII = _llIIlIllll.Collection.Default:FindFirstChild("\071\114\097\098\080\097\114\114\121") if not _IllllIlIII then return end
+ end
+ for _, track in pairs(_lIIllIIIll.Animator:GetPlayingAnimationTracks()) do if track.Name == "\071\114\097\098\080\097\114\114\121" or track.Name == "\071\114\097\098" then if not _lIIIlIlIlI and not _llIllllIIl.FEMode then track.TimePosition = 0 end
+ _lIIlIlIIII(track) elseif track.Name == "\083\117\099\099\101\115\115\080\097\114\114\121" or track.Name == "\083\117\099\099\101\115\115" then if _lIIIlIlIlI and not _llIllllIIl.FEMode then track.TimePosition = 0 end
+ _lIIlIlIIII(track) end
+ end
+ local _IIllIlIIll = _lIIllIIIll.Animator:LoadAnimation(_IllllIlIII) _IlIIlIIIll(_IIllIlIIll) end
+ local function _IlllIlIlII() if os.clock() - _IIIlIIIlIl >= (1 / _llIllllIIl.Rate) then _IIIlIIIlIl = os.clock() if (os.clock() - _IlIIlIIllI) >= 0.1 or _IllIlIllIl or _lIIIlIlIlI then _IlIIlIIllI = os.clock() _IllIlIllIl = false _llIIIllIll() end
+ end
+ end
+ pcall( function () ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect( function () _IllIlIllIl = true if _lIlIllIlII < 5 then _lIlIllIlII += 1 task.delay(0.05, function () if _lIlIllIlII > 0 then _lIlIllIlII -= 1 end
+ end
+ ) end
+ end
+ ) end
+ ) task.spawn( function () while true do _lIIIlIlIlI = (_lIlIllIlII > 1) task.wait(0.1) end
+ end
+ ) local function _IIllIlllll() local _llllIIlllI = {} local _IIIllIIIll local _llllIIIIII = UserInputService.TouchEnabled and not UserInputService.MouseEnabled local _lIIlIlIIlI = _lIllIlllll:GetMouse() if not _llllIIIIII then _IIIllIIIll = {_lIIlIlIIlI.X, _lIIlIlIIlI.Y} else local _IllIIIllIl = _lllllllIll.ViewportSize _IIIllIIIll = {_IllIIIllIl.X / 2, _IllIIIllIl.Y / 2} end
+ local _lIlIllIlll = _lIllIlllll:GetAttribute("\076\111\098\098\121\084\114\097\105\110\105\110\103") and _lIllIlllll.Character and _lIllIlllll.Character.Parent == _llIIllllII.Dead if _lIlIllIlll then for _, player_character in _llIIllllII.Dead:GetChildren() do local _IIIIllllll = Players:GetPlayerFromCharacter(player_character) if _IIIIllllll and (_IIIIllllll:GetAttribute("\076\111\098\098\121\084\114\097\105\110\105\110\103") and player_character.PrimaryPart) then _llllIIlllI[player_character.Name] = _lllllllIll:WorldToScreenPoint(player_character.PrimaryPart.Position) end
+ end
+ for _, target in _IllIIlllIl:GetTagged("\076\111\098\098\121\084\114\097\105\110\105\110\103\084\097\114\103\101\116") do _llllIIlllI[target.Name] = _lllllllIll:WorldToScreenPoint(target.Position) end
+ else for _, entity in _llIIllllII.Alive:GetChildren() do if entity.PrimaryPart then _llllIIlllI[entity.Name] = _lllllllIll:WorldToScreenPoint(entity.PrimaryPart.Position) end
+ end
+ end
+ return { CFrame = _lllllllIll.CFrame, Positions = _llllIIlllI, Mouse = _IIIllIIIll } end
+ local function _IIlllIlllI() if _lIlIlIIIll.SafeMode and not _lIIllllIII() then return end
+ local _IlllllIlIl = _IIllIlllll() pcall(_IIIlIllIlI.fire, _IlllllIlIl.CFrame, _IlllllIlIl.Positions, _IlllllIlIl.Mouse) end
+ local _IlIIlIlIlI = 0 local _lIlIllIlll = 0.1 local function _IIIlIlIIIl() if not _lIlIlIIIll.Spamming then return end
+ if os.clock() - _IlIIlIlIlI < _lIlIllIlll then return end
+ local _IlIIIllIIl = _lIllIlllll.Character if not _IlIIIllIIl or not _IlIIIllIIl:FindFirstChild("\072\117\109\097\110\111\105\100\082\111\111\116\080\097\114\116") then return end
+ local _IlllllllIl = _IlIIIllIIl.HumanoidRootPart local _lIllIlIIII = _llIIllllII:FindFirstChild("\066\097\108\108\115") if not _lIllIlIIII then return end
+ for _, ball in ipairs(_lIllIlIIII:GetChildren()) do if ball:GetAttribute("\114\101\097\108\066\097\108\108") then if ball:GetAttribute("\116\097\114\103\101\116") == tostring(_lIllIlllll) then local _IllllIIlIl = (_IlllllllIl.Position - ball.Position).Magnitude if _IllllIIlIl <= 30 then _IIlllIlllI() _IlIIlIlIlI = os.clock() break end
+ end
+ end
+ end
+ end
+ local _lIlllllIll = 0 local _llIIlIlllI local _IllllIIllI = 20 local function _IlIIIlIIlI(deltaTime) if not _lIlIlIIIll.Spamming then _lIlllllIll = 0 return end
+ _IIIlIlIIIl() local _IlIllIIIll = _lIlIlIIIll.TargetCPS local _lIIIlllIll = 1 / _IlIllIIIll _lIlllllIll += deltaTime local _lIIlIIlIII = 0 local function _IIlIlIIIII() if _lIlIlIIIll.SafeMode and not _lIIllllIII() then return end
+ _IIlllIlllI() _IlllIlIlII() end
+ while _lIlllllIll >= _lIIIlllIll and _lIlIlIIIll.Spamming and _lIIlIIlIII < _IllllIIllI do _lIlllllIll -= _lIIIlllIll if _lIlIlIIIll.SuperSpam then for i = 1, _lIlIlIIIll.SuperSpamClicks do if not _lIlIlIIIll.Spamming then break end
+ _IIlIlIIIII() end
+ else _IIlIlIIIII() end
+ _lIIlIIlIII += 1 end
+ end
+ function startSpamLoop() if _llIIlIlllI then _llIIlIlllI:Disconnect() end
+ _llIIlIlllI = RunService.Heartbeat:Connect(_IlIIIlIIlI) end
+ function stopSpamLoop() if _llIIlIlllI then _llIIlIlllI:Disconnect() _llIIlIlllI = nil end
+ _lIlllllIll = 0 end
+ local _llIIIIlIII = Instance.new("\083\099\114\101\101\110\071\117\105") _llIIIIlIII.Name = "\083\049\052\120\077\097\099\114\111\071\085\073" _llIIIIlIII.ResetOnSpawn = false _llIIIIlIII.IgnoreGuiInset = true _llIIIIlIII.ZIndexBehavior = Enum.ZIndexBehavior.Sibling _llIIIIlIII.Parent = _lIlIIIIlll local _lIlIIIIIll = Instance.new("\070\114\097\109\101") _lIlIIIIIll.Name = "\077\097\105\110\070\114\097\109\101" _lIlIIIIIll.Size = UDim2.new(0, 340, 0, 235) _lIlIIIIIll.Position = UDim2.new(0.5, -170, 0.5, -117) _lIlIIIIIll.BackgroundColor3 = Color3.fromRGB(0, 0, 0) _lIlIIIIIll.BorderSizePixel = 0 _lIlIIIIIll.Active = true _lIlIIIIIll.Parent = _llIIIIlIII local _lIIIllIlll = Instance.new("\085\073\067\111\114\110\101\114") _lIIIllIlll.CornerRadius = UDim.new(0, 8) _lIIIllIlll.Parent = _lIlIIIIIll local _IIlIIlllII = Instance.new("\085\073\083\116\114\111\107\101") _IIlIIlllII.Color = Color3.fromRGB(255, 255, 255) _IIlIIlllII.Transparency = 0.2 _IIlIIlllII.Parent = _lIlIIIIIll local _IIIlllIlIl = Instance.new("\070\114\097\109\101") _IIIlllIlIl.Size = UDim2.new(1, 0, 0, 25) _IIIlllIlIl.BackgroundTransparency = 1 _IIIlllIlIl.Parent = _lIlIIIIIll local _lIllIllIlI = Instance.new("\084\101\120\116\076\097\098\101\108") _lIllIllIlI.Size = UDim2.new(1, 0, 1, 0) _lIllIllIlI.BackgroundTransparency = 1 _lIllIllIlI.Font = Enum.Font.GothamBold _lIllIllIlI.Text = "\083\049\052\120\032\045\032\077\097\099\114\111" _lIllIllIlI.TextColor3 = Color3.fromRGB(255, 255, 255) _lIllIllIlI.TextSize = 18 _lIllIllIlI.Parent = _IIIlllIlIl local function _IlIlllIIll(parent, position, size, default, callback) local _llIlIIIIII = Instance.new("\070\114\097\109\101") _llIlIIIIII.Size = size _llIlIIIIII.Position = position _llIlIIIIII.BackgroundColor3 = default and Color3.fromRGB(255,255,255) or Color3.fromRGB(0,0,0) _llIlIIIIII.BorderSizePixel = 0 _llIlIIIIII.Parent = parent local _IllIlIIlIl = Instance.new("\085\073\083\116\114\111\107\101") _IllIlIIlIl.Color = Color3.fromRGB(255,255,255) _IllIlIIlIl.Thickness = 1 _IllIlIIlIl.Parent = _llIlIIIIII local _lIllllllII = Instance.new("\085\073\067\111\114\110\101\114") _lIllllllII.CornerRadius = UDim.new(1, 0) _lIllllllII.Parent = _llIlIIIIII local _IIlIIlIlIl = UDim2.new(0, size.Y.Offset - 6, 0, size.Y.Offset - 6) local _IlllIIIlII = Instance.new("\070\114\097\109\101") _IlllIIIlII.Size = _IIlIIlIlIl _IlllIIIlII.Position = UDim2.new(0, 3, 0.5, -_IIlIIlIlIl.Y.Offset/2) _IlllIIIlII.BackgroundColor3 = default and Color3.fromRGB(0,0,0) or Color3.fromRGB(255,255,255) _IlllIIIlII.BorderSizePixel = 0 _IlllIIIlII.Parent = _llIlIIIIII local _llIlIIIIIl = Instance.new("\085\073\067\111\114\110\101\114") _llIlIIIIIl.CornerRadius = UDim.new(1, 0) _llIlIIIIIl.Parent = _IlllIIIlII local _lIlllIlIll = Instance.new("\084\101\120\116\066\117\116\116\111\110") _lIlllIlIll.Size = UDim2.new(1, 0, 1, 0) _lIlllIlIll.BackgroundTransparency = 1 _lIlllIlIll.Text = "" _lIlllIlIll.Parent = _llIlIIIIII local _IIIIIIIlII = default local function _lIIIllIlII() if _IIIIIIIlII then _llIlIIIIII.BackgroundColor3 = Color3.fromRGB(255,255,255) _IlllIIIlII.BackgroundColor3 = Color3.fromRGB(0,0,0) _IlllIIIlII:TweenPosition(UDim2.new(1, -3 - _IIlIIlIlIl.X.Offset, 0.5, -_IIlIIlIlIl.Y.Offset/2), "\079\117\116", "\081\117\097\100", 0.1, true) else _llIlIIIIII.BackgroundColor3 = Color3.fromRGB(0,0,0) _IlllIIIlII.BackgroundColor3 = Color3.fromRGB(255,255,255) _IlllIIIlII:TweenPosition(UDim2.new(0, 3, 0.5, -_IIlIIlIlIl.Y.Offset/2), "\079\117\116", "\081\117\097\100", 0.1, true) end
+ end
+ _lIlllIlIll.MouseButton1Click:Connect( function () _IIIIIIIlII = not _IIIIIIIlII _lIIIllIlII() callback(_IIIIIIIlII) end
+ ) _lIIIllIlII() return { SetValue = function (self, v) _IIIIIIIlII = v _lIIIllIlII() end
+ } end
+ local function _IIllIlIlIl(parent, position, size, text) local _lllllIIIll = Instance.new("\084\101\120\116\076\097\098\101\108") _lllllIIIll.Size = size _lllllIIIll.Position = position _lllllIIIll.BackgroundTransparency = 1 _lllllIIIll.Font = Enum.Font.GothamMedium _lllllIIIll.Text = text _lllllIIIll.TextColor3 = Color3.fromRGB(200, 200, 200) _lllllIIIll.TextSize = 13 _lllllIIIll.TextXAlignment = Enum.TextXAlignment.Left _lllllIIIll.Parent = parent return _lllllIIIll end
+ local _lIlIllIIlI = _IIllIlIlIl(_lIlIIIIIll, UDim2.new(0, 10, 0, 30), UDim2.new(0, 120, 0, 22), "\083\112\097\109\032\065\099\116\105\118\101") local _IIlIIlIllI = _IlIlllIIll(_lIlIIIIIll, UDim2.new(0, 250, 0, 30), UDim2.new(0, 44, 0, 20), _lIlIlIIIll.Spamming, function (v) _lIlIlIIIll.Spamming = v _lIlIlIlIII() _lIlllllIll = 0 if v then startSpamLoop() _llIIIllIll() else stopSpamLoop() end
+ end
+ ) local _IllIIllIII = _IIllIlIlIl(_lIlIIIIIll, UDim2.new(0, 10, 0, 60), UDim2.new(0, 120, 0, 22), "\083\117\112\101\114\032\083\112\097\109") local _lllIIIlIlI = _IlIlllIIll(_lIlIIIIIll, UDim2.new(0, 250, 0, 60), UDim2.new(0, 44, 0, 20), _lIlIlIIIll.SuperSpam, function (v) _lIlIlIIIll.SuperSpam = v _lIlIlIlIII() end
+ ) local _lIIlIIlIll = _IIllIlIlIl(_lIlIIIIIll, UDim2.new(0, 10, 0, 90), UDim2.new(0, 120, 0, 22), "\083\097\102\101\032\077\111\100\101") local _IIlIIIlIlI = _IlIlllIIll(_lIlIIIIIll, UDim2.new(0, 250, 0, 90), UDim2.new(0, 44, 0, 20), _lIlIlIIIll.SafeMode, function (v) _lIlIlIIIll.SafeMode = v _lIlIlIlIII() end
+ ) local _lllIIllllI = Instance.new("\084\101\120\116\066\117\116\116\111\110") _lllIIllllI.Size = UDim2.new(0, 130, 0, 26) _lllIIllllI.Position = UDim2.new(0, 105, 0, 120) _lllIIllllI.BackgroundColor3 = Color3.fromRGB(0,0,0) _lllIIllllI.Text = _lIlIlIIIll.Keybind.Name _lllIIllllI.TextColor3 = Color3.fromRGB(200, 200, 200) _lllIIllllI.Font = Enum.Font.GothamMedium _lllIIllllI.TextSize = 14 _lllIIllllI.Parent = _lIlIIIIIll local _llIlllIllI = Instance.new("\085\073\067\111\114\110\101\114") _llIlllIllI.CornerRadius = UDim.new(0, 4) _llIlllIllI.Parent = _lllIIllllI local _IlIIIllIII = Instance.new("\085\073\083\116\114\111\107\101") _IlIIIllIII.Color = Color3.fromRGB(80, 80, 80) _IlIIIllIII.Transparency = 0.5 _IlIIIllIII.Parent = _lllIIllllI _lllIIllllI.MouseButton1Click:Connect( function () _lllIIllllI.Text = "\046\046\046" local _lIllIlllIl = UserInputService.InputBegan:Wait() if _lIllIlllIl.UserInputType == Enum.UserInputType.Keyboard then _lIlIlIIIll.Keybind = _lIllIlllIl.KeyCode _lllIIllllI.Text = _lIlIlIIIll.Keybind.Name _lIlIlIlIII() else _lllIIllllI.Text = _lIlIlIIIll.Keybind.Name end
+ end
+ ) local _lIlllIlIII = _IIllIlIlIl(_lIlIIIIIll, UDim2.new(0, 10, 0, 155), UDim2.new(0, 50, 0, 22), "\067\080\083\058") local _IIIllIIIII = Instance.new("\070\114\097\109\101") _IIIllIIIII.Size = UDim2.new(0, 168, 0, 20) _IIIllIIIII.Position = UDim2.new(0, 60, 0, 155) _IIIllIIIII.BackgroundColor3 = Color3.fromRGB(0,0,0) _IIIllIIIII.BorderSizePixel = 0 _IIIllIIIII.Parent = _lIlIIIIIll local _IlIlIIllll = Instance.new("\085\073\067\111\114\110\101\114") _IlIlIIllll.CornerRadius = UDim.new(1, 0) _IlIlIIllll.Parent = _IIIllIIIII local _IIlIIlIIII = Instance.new("\085\073\083\116\114\111\107\101") _IIlIIlIIII.Color = Color3.fromRGB(80,80,80) _IIlIIlIIII.Transparency = 0.5 _IIlIIlIIII.Parent = _IIIllIIIII local _lIllIlIlIl = Instance.new("\070\114\097\109\101") _lIllIlIlIl.Size = UDim2.fromScale(0, 1) _lIllIlIlIl.BackgroundColor3 = Color3.fromRGB(255,255,255) _lIllIlIlIl.BorderSizePixel = 0 _lIllIlIlIl.Parent = _IIIllIIIII local _llIIIIIlII = Instance.new("\085\073\067\111\114\110\101\114") _llIIIIIlII.CornerRadius = UDim.new(1,0) _llIIIIIlII.Parent = _lIllIlIlIl local _lllIlIIIlI = Instance.new("\070\114\097\109\101") _lllIlIIIlI.Size = UDim2.new(0, 20, 0, 20) _lllIlIIIlI.Position = UDim2.new(0, 0, 0, 0) _lllIlIIIlI.BackgroundColor3 = Color3.fromRGB(0,0,0) _lllIlIIIlI.BorderSizePixel = 0 _lllIlIIIlI.Parent = _IIIllIIIII local _llIlIIIIIl = Instance.new("\085\073\067\111\114\110\101\114") _llIlIIIIIl.CornerRadius = UDim.new(1, 0) _llIlIIIIIl.Parent = _lllIlIIIlI local _IlIllIIlll = Instance.new("\085\073\083\116\114\111\107\101") _IlIllIIlll.Color = Color3.fromRGB(255,255,255) _IlIllIIlll.Thickness = 1 _IlIllIIlll.Parent = _lllIlIIIlI local _IlIIlIIIIl = Instance.new("\084\101\120\116\076\097\098\101\108") _IlIIlIIIIl.Size = UDim2.new(0, 60, 0, 22) _IlIIlIIIIl.Position = UDim2.new(0, 254, 0, 155) _IlIIlIIIIl.BackgroundTransparency = 1 _IlIIlIIIIl.Font = Enum.Font.GothamMedium _IlIIlIIIIl.Text = tostring(_lIlIlIIIll.TargetCPS) _IlIIlIIIIl.TextColor3 = Color3.fromRGB(200,200,200) _IlIIlIIIIl.TextSize = 14 _IlIIlIIIIl.TextXAlignment = Enum.TextXAlignment.Left _IlIIlIIIIl.Parent = _lIlIIIIIll local _lIllllIlll, cpsMax, cpsStep = 50, 500, 50 local function _IllllllIII(value) _lIlIlIIIll.TargetCPS = value _IlIIlIIIIl.Text = tostring(value) local _lllIlIIlll = (value - _lIllllIlll) / (cpsMax - _lIllllIlll) _lIllIlIlIl.Size = UDim2.new(_lllIlIIlll, 0, 1, 0) _lllIlIIIlI.Position = UDim2.new(_lllIlIIlll, -10, 0, 0) _lIlIlIlIII() end
+ _IllllllIII(_lIlIlIIIll.TargetCPS) local function _IIllIIlllI(_lIllIlllIl) local _IlllIIIllI = (_lIllIlllIl.Position.X - _IIIllIIIII.AbsolutePosition.X) / _IIIllIIIII.AbsoluteSize.X _IlllIIIllI = math.clamp(_IlllIIIllI, 0, 1) local _llIlIIllII = _lIllllIlll + _IlllIIIllI * (cpsMax - _lIllllIlll) local _llllllIllI = math.floor(_llIlIIllII / cpsStep + 0.5) * cpsStep _llllllIllI = math.clamp(_llllllIllI, _lIllllIlll, cpsMax) _IllllllIII(_llllllIllI) end
+ _IIIllIIIII.InputBegan:Connect( function (_lIllIlllIl) if _lIllIlllIl.UserInputType == Enum.UserInputType.MouseButton1 or _lIllIlllIl.UserInputType == Enum.UserInputType.Touch then _IIllIIlllI(_lIllIlllIl) local _IIIIIIIlII _IIIIIIIlII = UserInputService.InputChanged:Connect( function (changed) if changed.UserInputType == Enum.UserInputType.MouseMovement or changed.UserInputType == Enum.UserInputType.Touch then _IIllIIlllI(changed) end
+ end
+ ) UserInputService.InputEnded:Connect( function (ended) if ended.UserInputType == Enum.UserInputType.MouseButton1 or ended.UserInputType == Enum.UserInputType.Touch then _IIIIIIIlII:Disconnect() end
+ end
+ ) end
+ end
+ ) local _IIIlllIIlI = _IIllIlIlIl(_lIlIIIIIll, UDim2.new(0, 10, 0, 185), UDim2.new(0, 100, 0, 22), "\067\108\105\099\107\115\047\066\117\114\115\116\058") local _lIIlIllIII = Instance.new("\084\101\120\116\066\111\120") _lIIlIllIII.Size = UDim2.new(0, 50, 0, 22) _lIIlIllIII.Position = UDim2.new(0, 115, 0, 185) _lIIlIllIII.BackgroundColor3 = Color3.fromRGB(0,0,0) _lIIlIllIII.Text = tostring(_lIlIlIIIll.SuperSpamClicks) _lIIlIllIII.TextColor3 = Color3.fromRGB(200, 200, 200) _lIIlIllIII.Font = Enum.Font.GothamMedium _lIIlIllIII.TextSize = 14 _lIIlIllIII.Parent = _lIlIIIIIll local _IlllllIIIl = Instance.new("\085\073\067\111\114\110\101\114") _IlllllIIIl.CornerRadius = UDim.new(0, 4) _IlllllIIIl.Parent = _lIIlIllIII local _IllIllllIl = Instance.new("\085\073\083\116\114\111\107\101") _IllIllllIl.Color = Color3.fromRGB(80, 80, 80) _IllIllllIl.Transparency = 0.5 _IllIllllIl.Parent = _lIIlIllIII _lIIlIllIII.FocusLost:Connect( function () local _IIllllllII = tonumber(_lIIlIllIII.Text) if _IIllllllII and _IIllllllII >= 1 and _IIllllllII <= 50 then _lIlIlIIIll.SuperSpamClicks = math.floor(_IIllllllII) _lIIlIllIII.Text = tostring(_lIlIlIIIll.SuperSpamClicks) _lIlIlIlIII() end
+ end
+ ) local _IIIllllIII = false local _lIlllIlIII = nil local _IIlllIIIlI = nil _IIIlllIlIl.InputBegan:Connect( function (_lIllIlllIl) if _lIllIlllIl.UserInputType == Enum.UserInputType.MouseButton1 or _lIllIlllIl.UserInputType == Enum.UserInputType.Touch then _IIIllllIII = true _lIlllIlIII = _lIllIlllIl.Position _IIlllIIIlI = _lIlIIIIIll.Position _lIllIlllIl.Changed:Connect( function () if _lIllIlllIl.UserInputState == Enum.UserInputState.End then _IIIllllIII = false end
+ end
+ ) end
+ end
+ ) UserInputService.InputChanged:Connect( function (_lIllIlllIl) if _IIIllllIII and (_lIllIlllIl.UserInputType == Enum.UserInputType.MouseMovement or _lIllIlllIl.UserInputType == Enum.UserInputType.Touch) then local _lllIlIIlIl = _lIllIlllIl.Position - _lIlllIlIII _lIlIIIIIll.Position = UDim2.new(_IIlllIIIlI.X.Scale, _IIlllIIIlI.X.Offset + _lllIlIIlIl.X, _IIlllIIIlI.Y.Scale, _IIlllIIIlI.Y.Offset + _lllIlIIlIl.Y) end
+ end
+ ) UserInputService.InputBegan:Connect( function (_lIllIlllIl, gameProcessed) if gameProcessed then return end
+ if _lIllIlllIl.UserInputType == Enum.UserInputType.Keyboard and _lIllIlllIl.KeyCode == _lIlIlIIIll.Keybind then _lIlIlIIIll.Spamming = not _lIlIlIIIll.Spamming _lIlIlIlIII() _lIlllllIll = 0 _IIlIIlIllI:SetValue(_lIlIlIIIll.Spamming) if _lIlIlIIIll.Spamming then startSpamLoop() _llIIIllIll() else stopSpamLoop() end
+ end
+ end
+ ) if _lIlIlIIIll.Spamming then startSpamLoop() _llIIIllIll() end
+ _lIllIlllll.CharacterRemoving:Connect( function () if _lIlIlIIIll.Spamming then _lIlIlIIIll.Spamming = false _lIlIlIlIII() _IIlIIlIllI:SetValue(false) stopSpamLoop() end
+ end
+ ) print("\083\049\052\120\032\045\032\077\097\099\114\111\032\108\111\097\100\101\100\046\032\075\101\121\098\105\110\100\058\032" .. _lIlIlIIIll.Keybind.Name)
