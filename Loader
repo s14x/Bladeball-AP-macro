@@ -99,7 +99,7 @@ local Config = {
     Keybind = Enum.KeyCode.C,
     SuperSpam = false,
     SuperSpamClicks = 2,
-    TargetCPS = 18,
+    TargetCPS = 200,
     SafeMode = true,
     MacroAnimationFix = true,
 
@@ -139,8 +139,11 @@ local function loadConfig()
             end
         end
     end
-    if typeof(Config.TargetCPS) ~= "number" then Config.TargetCPS = 18 end
-    Config.TargetCPS = math.clamp(Config.TargetCPS, 1, 500)
+    if typeof(Config.TargetCPS) ~= "number" then Config.TargetCPS = 200 end
+    Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
+    -- snap CPS to step of 5
+    Config.TargetCPS = math.floor((Config.TargetCPS + 2.5) / 5) * 5
+    Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
     if typeof(Config.AutoParryAccuracy) ~= "number" then Config.AutoParryAccuracy = 100 end
     Config.AutoParryAccuracy = math.clamp(Config.AutoParryAccuracy, 1, 100)
     if Config.ParryMethod ~= "Legit" and Config.ParryMethod ~= "Blatant" then Config.ParryMethod = "Legit" end
@@ -476,16 +479,6 @@ local function GetParryData()
     return { CFrame = camCF, Positions = PlayerPositions, Mouse = MousePos }
 end
 
-local function fireParryRemote(data)
-    if not _capturedRemote or not _capturedArgs or not _tokenFound or not _token then return false end
-    local okTok, token = pcall(_tokenize, _capturedArgs[2])
-    if not okTok or not token or token == "" then return false end
-    pcall(function()
-        _capturedRemote:FireServer(_capturedArgs[1], _capturedArgs[2], token, 0.5, data.CFrame, data.Positions, data.Mouse, false)
-    end)
-    return true
-end
-
 local function ShouldFireLegit()
     if Config.ParryMethod ~= "Legit" then return true end
     local ch = GetCharacter()
@@ -501,19 +494,6 @@ local function ShouldFireLegit()
     end
     return false
 end
-
-local function FireParry()
-    if Config.SafeMode and not IsBlockLegit() then return false end
-    if not ShouldFireLegit() then return false end
-    return fireParryRemote(GetParryData())
-end
-
-local InfinityFlag = false
-pcall(function()
-    ReplicatedStorage.Remotes.InfinityBall.OnClientEvent:Connect(function(_, v)
-        InfinityFlag = v and true or false
-    end)
-end)
 
 -- ============================================================
 -- SHARED ACCURACY
@@ -534,6 +514,62 @@ local function CalcParryAccuracy(zoomies)
     return ping_threshold + math.max(speed / speed_divisor, 9.5)
 end
 
+-- ---- per-frame caches (reset once per frame, reused by all FireParry calls) ----
+local _frameParryData  = nil
+local _frameShouldFire = nil
+local _frameBlockOk    = nil
+local _frameToken      = nil
+
+local function _resetFrameCaches()
+    _frameParryData  = nil
+    _frameShouldFire = nil
+    _frameBlockOk    = nil
+    _frameToken      = nil
+end
+
+-- ============================================================
+-- FIRE + GATES (uses per-frame caches)
+-- ============================================================
+local function fireParryRemote(data)
+    if not _capturedRemote or not _capturedArgs or not _tokenFound or not _token then return false end
+    local token = _frameToken
+    if not token then
+        local okTok, t = pcall(_tokenize, _capturedArgs[2])
+        if not okTok or not t or t == "" then return false end
+        token = t
+        _frameToken = token
+    end
+    pcall(function()
+        _capturedRemote:FireServer(_capturedArgs[1], _capturedArgs[2], token, 0.5, data.CFrame, data.Positions, data.Mouse, false)
+    end)
+    return true
+end
+
+local function FireParry()
+    -- safe-mode gate (cached per frame)
+    if Config.SafeMode then
+        if _frameBlockOk == nil then _frameBlockOk = IsBlockLegit() end
+        if not _frameBlockOk then return false end
+    end
+
+    -- legit-method gate (cached per frame)
+    if Config.ParryMethod == "Legit" then
+        if _frameShouldFire == nil then _frameShouldFire = ShouldFireLegit() end
+        if not _frameShouldFire then return false end
+    end
+
+    -- parry payload (cached per frame)
+    if not _frameParryData then _frameParryData = GetParryData() end
+    return fireParryRemote(_frameParryData)
+end
+
+local InfinityFlag = false
+pcall(function()
+    ReplicatedStorage.Remotes.InfinityBall.OnClientEvent:Connect(function(_, v)
+        InfinityFlag = v and true or false
+    end)
+end)
+
 -- ============================================================
 -- AUTO PARRY LOOP
 -- ============================================================
@@ -548,6 +584,7 @@ task.spawn(function()
 end)
 
 RunService.PreSimulation:Connect(function()
+    _resetFrameCaches()
     if not Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
@@ -584,23 +621,24 @@ RunService.PreSimulation:Connect(function()
 end)
 
 -- ============================================================
--- MACRO LOOP
+-- MACRO LOOP (now on PreSimulation — fires one frame earlier)
 -- ============================================================
 local timeAccumulator = 0
 
-RunService.Heartbeat:Connect(function(dt)
+RunService.PreSimulation:Connect(function(dt)
+    _resetFrameCaches()
     if not Config.Spamming then timeAccumulator = 0 return end
     if Config.SafeMode and not IsBlockLegit() then timeAccumulator = 0 return end
     if Config.ParryMethod == "Legit" and not ShouldFireLegit() then timeAccumulator = 0 return end
 
-    local targetCPS = math.clamp(Config.TargetCPS or 18, 1, 500)
+    local targetCPS = math.clamp(Config.TargetCPS or 200, 5, 500)
     local interval  = 1 / targetCPS
     timeAccumulator += dt
     if timeAccumulator >= interval then
         local fires = math.floor(timeAccumulator / interval)
         timeAccumulator -= fires * interval
         if timeAccumulator > interval * 2 then timeAccumulator = 0 end
-        if fires > 100 then fires = 100 end
+        if fires > 200 then fires = 200 end
         for _ = 1, fires do FireParry() end
         if Config.MacroAnimationFix then SpamParryAnimation() end
     end
@@ -621,6 +659,7 @@ task.spawn(function()
 end)
 
 RunService.PreSimulation:Connect(function()
+    _resetFrameCaches()
     if not Config.TriggerBot then return end
     if Config.Spamming then return end
     if not _capturedRemote then return end
@@ -1762,7 +1801,7 @@ do
                 FilterTag.TextColor3 = Color3.fromRGB(230,220,110)
             end
 
-            -- Build a ranked list: prefix matches first, then word-boundary, then anywhere.
+            -- Ranked list: prefix matches first, then word-boundary, then anywhere.
             local candidates = {}
             for _, sword in ipairs(SWORD_LIST) do
                 local catOK = true
@@ -1778,9 +1817,9 @@ do
                         if pos then
                             local rank = 3
                             if pos == 1 then
-                                rank = 1   -- starts with the query
+                                rank = 1
                             elseif low:sub(pos - 1, pos - 1) == " " then
-                                rank = 2   -- matches at a word boundary
+                                rank = 2
                             end
                             table.insert(candidates, { name = sword, rank = rank, pos = pos })
                         end
@@ -2454,6 +2493,7 @@ do
                     cfg.Max = cfg.Max or 100
                     cfg.Default = cfg.Default or cfg.Min
                     cfg.Round = cfg.Round or 0
+                    cfg.Step = cfg.Step or 0
                     cfg.Type = cfg.Type or ""
                     cfg.Callback = cfg.Callback or function() end
 
@@ -2545,7 +2585,13 @@ do
                     local function update(Input)
                         local SizeScale = math.clamp((Input.Position.X - con.AbsolutePosition.X) / con.AbsoluteSize.X, 0, 1)
                         local Main = ((cfg.Max - cfg.Min) * SizeScale) + cfg.Min
-                        local Value = NeverZen:Rounding(Main, cfg.Round)
+                        local Value = Main
+                        -- snap to step (e.g. 5 for CPS) BEFORE rounding
+                        if cfg.Step and cfg.Step > 0 then
+                            Value = math.floor(Value / cfg.Step + 0.5) * cfg.Step
+                            Value = math.clamp(Value, cfg.Min, cfg.Max)
+                        end
+                        Value = NeverZen:Rounding(Value, cfg.Round)
                         local normalized = (Value - cfg.Min) / (cfg.Max - cfg.Min)
                         TweenService:Create(block, TweenInfo.new(0.04), { Size = UDim2.new(normalized, 0, 1, 0) }):Play()
                         LabelValue.Text = tostring(Value) .. tostring(cfg.Type)
@@ -2570,9 +2616,14 @@ do
 
                     return {
                         SetValue = function(self, v)
-                            cfg.Default = v
-                            block.Size = UDim2.new(((cfg.Default - cfg.Min) / (cfg.Max - cfg.Min)), 0, 1, 0)
-                            LabelValue.Text = tostring(cfg.Default) .. tostring(cfg.Type)
+                            local snapped = v
+                            if cfg.Step and cfg.Step > 0 then
+                                snapped = math.floor(snapped / cfg.Step + 0.5) * cfg.Step
+                                snapped = math.clamp(snapped, cfg.Min, cfg.Max)
+                            end
+                            cfg.Default = snapped
+                            block.Size = UDim2.new(((snapped - cfg.Min) / (cfg.Max - cfg.Min)), 0, 1, 0)
+                            LabelValue.Text = tostring(snapped) .. tostring(cfg.Type)
                         end,
                         Fire = cfg.Callback,
                         Visible = function(self, v) Slider.Visible = v end,
@@ -3014,12 +3065,12 @@ MacroSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 local CpsLabel = MacroSection:AddLabel("CPS: " .. tostring(Config.TargetCPS))
 
--- CPS slider — no notification, no per-tick disk write (fixes lag while dragging).
--- Config still saves via the "Save Config" button or the global keybind triggers.
+-- CPS slider — snaps in steps of 5 (200, 205, 210, …)
+-- No notification, no per-tick disk write (fixes lag while dragging).
 local CpsSlider
 CpsSlider = MacroSection:AddSlider({
     Name = "CPS",
-    Min = 1, Max = 500, Round = 0,
+    Min = 5, Max = 500, Round = 0, Step = 5,
     Default = Config.TargetCPS,
     Callback = function(v)
         Config.TargetCPS = v
@@ -3310,6 +3361,7 @@ SetSection:AddButton({
         pcall(function() SafeToggle:SetValue(Config.SafeMode) end)
         pcall(function() MacroAnimFix:SetValue(Config.MacroAnimationFix) end)
         pcall(function() CpsSlider:SetValue(Config.TargetCPS) end)
+        CpsLabel:SetValue("CPS: " .. tostring(Config.TargetCPS))
         pcall(function() TBToggle:SetValue(Config.TriggerBot) end)
         pcall(function() TBAnimFix:SetValue(Config.TriggerBotAnimationFix) end)
         pcall(function() TBInfDetect:SetValue(Config.TriggerBotInfinityDetection) end)
