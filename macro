@@ -849,6 +849,7 @@ local SWORD_LIST = {
     "Christmas Blade","Winged Blade","Boreal Frostreaver","Glacial Hunter","Gingerbread Guardian","Yuletide Saber",
     "North Pole Enchanter","Blizzard Blade","Evergreen Edge","Holiday Herald","Santa's Slicer","Christmas Scythe",
     "Snowman Scythe","Candycane Crusher","Festive Cutter","Holy Emberblade","Evergreen Greatblade","Aether Katana",
+    "Flowing Katana",
     "New Years Blade","Time Stopper","Firework Spear","Axe Of Time","Fire Katana","Dual Fire Katana","Gilded Glory",
     "Festive Sword","Parasol","Dragon Sword","Evolved Dragon Sword","Draconis Emerald","Dragon Katana","Zombie Leg",
     "Viral Edge","Skeletal Slicer","Biohazard Sword","Plague Slayer","Banana Sword","Golden Gauntlets","Nebula Bow",
@@ -1761,51 +1762,77 @@ do
                 FilterTag.TextColor3 = Color3.fromRGB(230,220,110)
             end
 
-            local count = 0
+            -- Build a ranked list: prefix matches first, then word-boundary, then anywhere.
+            local candidates = {}
             for _, sword in ipairs(SWORD_LIST) do
-                local nameOK = (searchFilter == "" or sword:lower():find(searchFilter, 1, true))
                 local catOK = true
                 if catFilter then
                     catOK = (GetSwordCategory(sword) == catFilter)
                 end
-                if nameOK and catOK then
-                    local Row = Instance.new("TextButton")
-                    Row.Parent = Scroller
-                    Row.Size = UDim2.new(1,-14,0,32)
-                    Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
-                    Row.BorderSizePixel = 0
-                    Row.Text = sword
-                    Row.TextColor3 = Color3.fromRGB(255,255,255)
-                    Row.Font = Enum.Font.Gotham
-                    Row.TextSize = 14
-                    Row.TextXAlignment = Enum.TextXAlignment.Left
-                    Row.AutoButtonColor = false
-                    Row.ZIndex = 4
-
-                    local RowCorner = Instance.new("UICorner")
-                    RowCorner.CornerRadius = UDim.new(0,4)
-                    RowCorner.Parent = Row
-
-                    local rowPad = Instance.new("UIPadding")
-                    rowPad.PaddingLeft = UDim.new(0,12)
-                    rowPad.Parent = Row
-
-                    Row.MouseEnter:Connect(function()
-                        Row.BackgroundColor3 = Color3.fromRGB(45,45,45)
-                    end)
-                    Row.MouseLeave:Connect(function()
-                        Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
-                    end)
-                    Row.MouseButton1Click:Connect(function()
-                        if onPickCallback then
-                            pcall(onPickCallback, sword)
+                if catOK then
+                    if searchFilter == "" then
+                        table.insert(candidates, { name = sword, rank = 0, pos = 0 })
+                    else
+                        local low = sword:lower()
+                        local pos = low:find(searchFilter, 1, true)
+                        if pos then
+                            local rank = 3
+                            if pos == 1 then
+                                rank = 1   -- starts with the query
+                            elseif low:sub(pos - 1, pos - 1) == " " then
+                                rank = 2   -- matches at a word boundary
+                            end
+                            table.insert(candidates, { name = sword, rank = rank, pos = pos })
                         end
-                        ScreenGui.Enabled = false
-                    end)
-
-                    table.insert(rows, Row)
-                    count = count + 1
+                    end
                 end
+            end
+
+            table.sort(candidates, function(a, b)
+                if a.rank ~= b.rank then return a.rank < b.rank end
+                if a.pos ~= b.pos then return a.pos < b.pos end
+                if #a.name ~= #b.name then return #a.name < #b.name end
+                return a.name < b.name
+            end)
+
+            local count = #candidates
+            for _, entry in ipairs(candidates) do
+                local sword = entry.name
+                local Row = Instance.new("TextButton")
+                Row.Parent = Scroller
+                Row.Size = UDim2.new(1,-14,0,32)
+                Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+                Row.BorderSizePixel = 0
+                Row.Text = sword
+                Row.TextColor3 = Color3.fromRGB(255,255,255)
+                Row.Font = Enum.Font.Gotham
+                Row.TextSize = 14
+                Row.TextXAlignment = Enum.TextXAlignment.Left
+                Row.AutoButtonColor = false
+                Row.ZIndex = 4
+
+                local RowCorner = Instance.new("UICorner")
+                RowCorner.CornerRadius = UDim.new(0,4)
+                RowCorner.Parent = Row
+
+                local rowPad = Instance.new("UIPadding")
+                rowPad.PaddingLeft = UDim.new(0,12)
+                rowPad.Parent = Row
+
+                Row.MouseEnter:Connect(function()
+                    Row.BackgroundColor3 = Color3.fromRGB(45,45,45)
+                end)
+                Row.MouseLeave:Connect(function()
+                    Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+                end)
+                Row.MouseButton1Click:Connect(function()
+                    if onPickCallback then
+                        pcall(onPickCallback, sword)
+                    end
+                    ScreenGui.Enabled = false
+                end)
+
+                table.insert(rows, Row)
             end
 
             if count == 0 then
@@ -1847,7 +1874,6 @@ do
 
         return {
             Open = function(self, cb)
-                -- Supports BOTH SwordPicker:Open(cb) and SwordPicker.Open(cb)
                 if type(self) == "function" and cb == nil then cb = self end
                 onPickCallback = cb
                 SearchBox.Text = ""
@@ -3244,7 +3270,7 @@ local function ApplySwordSkin(text)
     NZNotification.new("Sword", "Equipped: " .. realName, 3)
 end
 
--- Open picker button (uses dot syntax — supports both dot & colon thanks to the safe Open)
+-- Open picker button
 SkinSection:AddButton({
     Name = "Click to Pick Sword",
     Callback = function()
