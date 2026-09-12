@@ -360,6 +360,7 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect(function()
+        if not (Config.Spamming or Config.TriggerBot) then return end
         if SpamAnimParries < 5 then
             SpamAnimParries += 1
             task.delay(0.05, function()
