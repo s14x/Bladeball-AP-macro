@@ -384,6 +384,7 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccessAll.OnClientEvent:Connect(function()
+        if not (Config.Spamming or Config.TriggerBot) then return end
         local char = GetCharacter()
         if not char then return end
         local humanoid = char:FindFirstChildOfClass("Humanoid")
