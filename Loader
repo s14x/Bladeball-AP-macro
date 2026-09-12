@@ -141,6 +141,7 @@ local function loadConfig()
     end
     if typeof(Config.TargetCPS) ~= "number" then Config.TargetCPS = 200 end
     Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
+    -- snap CPS to step of 5
     Config.TargetCPS = math.floor((Config.TargetCPS + 2.5) / 5) * 5
     Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
     if typeof(Config.AutoParryAccuracy) ~= "number" then Config.AutoParryAccuracy = 100 end
@@ -359,7 +360,6 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect(function()
-        if not (Config.Spamming or Config.TriggerBot) then return end
         if SpamAnimParries < 5 then
             SpamAnimParries += 1
             task.delay(0.05, function()
@@ -383,7 +383,6 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccessAll.OnClientEvent:Connect(function()
-        if not (Config.Spamming or Config.TriggerBot) then return end
         local char = GetCharacter()
         if not char then return end
         local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -515,6 +514,7 @@ local function CalcParryAccuracy(zoomies)
     return ping_threshold + math.max(speed / speed_divisor, 9.5)
 end
 
+-- ---- per-frame caches (reset once per frame, reused by all FireParry calls) ----
 local _frameParryData  = nil
 local _frameShouldFire = nil
 local _frameBlockOk    = nil
@@ -528,7 +528,7 @@ local function _resetFrameCaches()
 end
 
 -- ============================================================
--- FIRE + GATES
+-- FIRE + GATES (uses per-frame caches)
 -- ============================================================
 local function fireParryRemote(data)
     if not _capturedRemote or not _capturedArgs or not _tokenFound or not _token then return false end
@@ -546,14 +546,19 @@ local function fireParryRemote(data)
 end
 
 local function FireParry()
+    -- safe-mode gate (cached per frame)
     if Config.SafeMode then
         if _frameBlockOk == nil then _frameBlockOk = IsBlockLegit() end
         if not _frameBlockOk then return false end
     end
+
+    -- legit-method gate (cached per frame)
     if Config.ParryMethod == "Legit" then
         if _frameShouldFire == nil then _frameShouldFire = ShouldFireLegit() end
         if not _frameShouldFire then return false end
     end
+
+    -- parry payload (cached per frame)
     if not _frameParryData then _frameParryData = GetParryData() end
     return fireParryRemote(_frameParryData)
 end
@@ -616,7 +621,7 @@ RunService.PreSimulation:Connect(function()
 end)
 
 -- ============================================================
--- MACRO LOOP
+-- MACRO LOOP (now on PreSimulation — fires one frame earlier)
 -- ============================================================
 local timeAccumulator = 0
 
@@ -640,11 +645,9 @@ RunService.PreSimulation:Connect(function(dt)
 end)
 
 -- ============================================================
--- TRIGGERBOT LOOP  (HOLD-based, mirrors UI toggle visually)
+-- TRIGGERBOT LOOP
 -- ============================================================
 local TBTriggerData = {}
-local TBToggle              -- forward declaration (UI is built later)
-local TBLastEffective = nil -- tracks last effective state, to sync UI visuals
 
 task.spawn(function()
     while true do
@@ -657,24 +660,7 @@ end)
 
 RunService.PreSimulation:Connect(function()
     _resetFrameCaches()
-
-    -- Poll the key every frame — no state can ever desync.
-    local Held = Config.TriggerBotKeybind ~= nil
-        and UserInputService:IsKeyDown(Config.TriggerBotKeybind)
-    local Effective = Config.TriggerBot or Held
-
-    -- Mirror effective state onto the UI toggle.
-    -- SetVisualOnly only moves the knob / recolors — it does NOT touch
-    -- Config.TriggerBot, does NOT fire the toggle callback, does NOT
-    -- save the file, does NOT send a notification. Zero spam.
-    if TBLastEffective ~= Effective then
-        TBLastEffective = Effective
-        if TBToggle and TBToggle.SetVisualOnly then
-            pcall(function() TBToggle:SetVisualOnly(Effective) end)
-        end
-    end
-
-    if not Effective then return end
+    if not Config.TriggerBot then return end
     if Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
@@ -1815,6 +1801,7 @@ do
                 FilterTag.TextColor3 = Color3.fromRGB(230,220,110)
             end
 
+            -- Ranked list: prefix matches first, then word-boundary, then anywhere.
             local candidates = {}
             for _, sword in ipairs(SWORD_LIST) do
                 local catOK = true
@@ -2427,18 +2414,6 @@ do
 
                     return {
                         SetValue = function(self, v) cfg.Default = v setValue(v) cfg.Callback(v, cfg) end,
-                        -- Visual-only update: moves the knob and recolors, but does NOT
-                        -- touch cfg.Default, does NOT fire the callback (no save, no notify).
-                        SetVisualOnly = function(self, v)
-                            color.BackgroundColor3 = v and NeverZen.Theme.Hightlight or Color3.fromRGB(152,152,152)
-                            if v then
-                                TweenService:Create(color, TweenInfo.new(0.2), { Position = UDim2.new(0.75,0,0.5,0) }):Play()
-                                TweenService:Create(Label, TweenInfo.new(0.4), { TextTransparency = 0.1 }):Play()
-                            else
-                                TweenService:Create(Label, TweenInfo.new(0.4), { TextTransparency = 0.4 }):Play()
-                                TweenService:Create(color, TweenInfo.new(0.2), { Position = UDim2.new(0.25,0,0.5,0) }):Play()
-                            end
-                        end,
                         SetName = function(self, name) Label.Text = name end,
                         Visible = function(self, v) Toggle.Visible = v end,
                     }
@@ -2611,6 +2586,7 @@ do
                         local SizeScale = math.clamp((Input.Position.X - con.AbsolutePosition.X) / con.AbsoluteSize.X, 0, 1)
                         local Main = ((cfg.Max - cfg.Min) * SizeScale) + cfg.Min
                         local Value = Main
+                        -- snap to step (e.g. 5 for CPS) BEFORE rounding
                         if cfg.Step and cfg.Step > 0 then
                             Value = math.floor(Value / cfg.Step + 0.5) * cfg.Step
                             Value = math.clamp(Value, cfg.Min, cfg.Max)
@@ -3089,6 +3065,8 @@ MacroSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 local CpsLabel = MacroSection:AddLabel("CPS: " .. tostring(Config.TargetCPS))
 
+-- CPS slider — snaps in steps of 5 (200, 205, 210, …)
+-- No notification, no per-tick disk write (fixes lag while dragging).
 local CpsSlider
 CpsSlider = MacroSection:AddSlider({
     Name = "CPS",
@@ -3111,8 +3089,7 @@ MacroSection:AddKeybind({
 -- ========== TRIGGERBOT TAB ==========
 local TBSection = TBTab:AddSection({ Name = "Triggerbot" })
 
--- NOTE: TBToggle is forward-declared near the triggerbot loop, so this assigns to it.
-TBToggle = TBSection:AddToggle({
+local TBToggle = TBSection:AddToggle({
     Name = "Active",
     Default = Config.TriggerBot,
     Callback = function(v)
@@ -3137,7 +3114,7 @@ local TBInfDetect = TBSection:AddToggle({
 TBSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 TBSection:AddKeybind({
-    Name = "Keybind (HOLD)",
+    Name = "Keybind",
     Default = Config.TriggerBotKeybind,
     Callback = function(key) Config.TriggerBotKeybind = key saveConfig() end,
 })
@@ -3294,6 +3271,7 @@ task.spawn(function()
     end
 end)
 
+-- Shared apply function used by the picker
 local function ApplySwordSkin(text)
     if not text or text == "" then return end
     local realName = FindRealSwordName(text)
@@ -3345,6 +3323,7 @@ local function ApplySwordSkin(text)
     NZNotification.new("Sword", "Equipped: " .. realName, 3)
 end
 
+-- Open picker button
 SkinSection:AddButton({
     Name = "Click to Pick Sword",
     Callback = function()
@@ -3459,13 +3438,15 @@ UserInputService.InputBegan:Connect(function(input, gp)
     if input.KeyCode == Config.Keybind then
         pcall(function() SpamToggle:SetValue(not Config.Spamming) end)
         saveConfig()
+    elseif input.KeyCode == Config.TriggerBotKeybind then
+        pcall(function() TBToggle:SetValue(not Config.TriggerBot) end)
+        saveConfig()
     end
-    -- Triggerbot key is polled with UserInputService:IsKeyDown() every frame.
 end)
 
 -- ========== START ==========
 if Config.Spamming then PlayParryAnimation() end
 
 NZNotification.new("INFINITE TSUKUYOMI", "Loaded. Parry once to hook. " ..
-    Config.Keybind.Name .. " = Tsukuyomi, hold " .. Config.TriggerBotKeybind.Name .. " = Triggerbot (HOLD)", 6)
+    Config.Keybind.Name .. " = Tsukuyomi, " .. Config.TriggerBotKeybind.Name .. " = Triggerbot", 6)
 print("[INFINITE TSUKUYOMI] loaded")
