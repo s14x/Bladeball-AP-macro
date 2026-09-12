@@ -650,6 +650,7 @@ end)
 -- TRIGGERBOT LOOP
 -- ============================================================
 local TBTriggerData = {}
+local TriggerBotHeld = false -- HOLD state driven by keybind
 
 task.spawn(function()
     while true do
@@ -662,7 +663,7 @@ end)
 
 RunService.PreSimulation:Connect(function()
     _resetFrameCaches()
-    if not Config.TriggerBot then return end
+    if not Config.TriggerBot and not TriggerBotHeld then return end
     if Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
@@ -3116,7 +3117,7 @@ local TBInfDetect = TBSection:AddToggle({
 TBSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 TBSection:AddKeybind({
-    Name = "Keybind",
+    Name = "Keybind (HOLD)",
     Default = Config.TriggerBotKeybind,
     Callback = function(key) Config.TriggerBotKeybind = key saveConfig() end,
 })
@@ -3441,8 +3442,16 @@ UserInputService.InputBegan:Connect(function(input, gp)
         pcall(function() SpamToggle:SetValue(not Config.Spamming) end)
         saveConfig()
     elseif input.KeyCode == Config.TriggerBotKeybind then
-        pcall(function() TBToggle:SetValue(not Config.TriggerBot) end)
-        saveConfig()
+        -- HOLD MODE: activate while key is held down
+        TriggerBotHeld = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gp)
+    if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+    if input.KeyCode == Config.TriggerBotKeybind then
+        -- HOLD MODE: deactivate on release
+        TriggerBotHeld = false
     end
 end)
 
@@ -3450,5 +3459,5 @@ end)
 if Config.Spamming then PlayParryAnimation() end
 
 NZNotification.new("INFINITE TSUKUYOMI", "Loaded. Parry once to hook. " ..
-    Config.Keybind.Name .. " = Tsukuyomi, " .. Config.TriggerBotKeybind.Name .. " = Triggerbot", 6)
+    Config.Keybind.Name .. " = Tsukuyomi, hold " .. Config.TriggerBotKeybind.Name .. " = Triggerbot (HOLD)", 6)
 print("[INFINITE TSUKUYOMI] loaded")
