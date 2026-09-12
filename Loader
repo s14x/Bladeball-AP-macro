@@ -647,10 +647,9 @@ RunService.PreSimulation:Connect(function(dt)
 end)
 
 -- ============================================================
--- TRIGGERBOT LOOP
+-- TRIGGERBOT LOOP  (HOLD-based: key is polled every frame)
 -- ============================================================
 local TBTriggerData = {}
-local TriggerBotHeld = false -- HOLD state driven by keybind
 
 task.spawn(function()
     while true do
@@ -663,7 +662,12 @@ end)
 
 RunService.PreSimulation:Connect(function()
     _resetFrameCaches()
-    if not Config.TriggerBot and not TriggerBotHeld then return end
+
+    -- Poll the key directly every frame — no state can ever desync.
+    local Held = Config.TriggerBotKeybind ~= nil
+        and UserInputService:IsKeyDown(Config.TriggerBotKeybind)
+
+    if not Config.TriggerBot and not Held then return end
     if Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
@@ -3441,18 +3445,8 @@ UserInputService.InputBegan:Connect(function(input, gp)
     if input.KeyCode == Config.Keybind then
         pcall(function() SpamToggle:SetValue(not Config.Spamming) end)
         saveConfig()
-    elseif input.KeyCode == Config.TriggerBotKeybind then
-        -- HOLD MODE: activate while key is held down
-        TriggerBotHeld = true
     end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gp)
-    if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
-    if input.KeyCode == Config.TriggerBotKeybind then
-        -- HOLD MODE: deactivate on release
-        TriggerBotHeld = false
-    end
+    -- Triggerbot key is polled with UserInputService:IsKeyDown() every frame.
 end)
 
 -- ========== START ==========
