@@ -141,7 +141,6 @@ local function loadConfig()
     end
     if typeof(Config.TargetCPS) ~= "number" then Config.TargetCPS = 200 end
     Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
-    -- snap CPS to step of 5
     Config.TargetCPS = math.floor((Config.TargetCPS + 2.5) / 5) * 5
     Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
     if typeof(Config.AutoParryAccuracy) ~= "number" then Config.AutoParryAccuracy = 100 end
@@ -546,19 +545,16 @@ local function fireParryRemote(data)
 end
 
 local function FireParry()
-    -- safe-mode gate (cached per frame)
     if Config.SafeMode then
         if _frameBlockOk == nil then _frameBlockOk = IsBlockLegit() end
         if not _frameBlockOk then return false end
     end
 
-    -- legit-method gate (cached per frame)
     if Config.ParryMethod == "Legit" then
         if _frameShouldFire == nil then _frameShouldFire = ShouldFireLegit() end
         if not _frameShouldFire then return false end
     end
 
-    -- parry payload (cached per frame)
     if not _frameParryData then _frameParryData = GetParryData() end
     return fireParryRemote(_frameParryData)
 end
@@ -621,7 +617,7 @@ RunService.PreSimulation:Connect(function()
 end)
 
 -- ============================================================
--- MACRO LOOP (now on PreSimulation — fires one frame earlier)
+-- MACRO LOOP
 -- ============================================================
 local timeAccumulator = 0
 
@@ -824,33 +820,22 @@ LocalPlayer.CharacterAdded:Connect(setupCharacterVisuals)
 -- COMPREHENSIVE SWORD LIST
 -- ============================================================
 local SWORD_LIST = {
-    -- ============================================================
     -- COMMON
-    -- ============================================================
     "Base Sword", "Dark Blade", "Pickaxe", "Massive Lollipop", "Melon Slice",
     "Wooden Hammer", "Tanto", "Bone", "Rapier", "Stick", "Baseball Bat",
     "Battle Axe", "Kitchen Knife", "Linked Sword", "Emerald Warden Blade",
-
-    -- ============================================================
     -- RARE
-    -- ============================================================
     "Etherium Dagger", "Vengeful Dagger", "Executive Greatsword",
     "Dragonslayer Blade", "Spearbeard", "Spark Sword", "Blocky Sword",
     "Red Saber", "Rockxcalibur", "Rifle", "Glowy Bone", "Frying Pan",
     "Comically Large Spoon", "Bonsai Tree", "Plunger", "DJ's Sword of Agility",
     "Sabrina's Sword of Healing", "Russo's Sword of Truth",
-
-    -- ============================================================
     -- LEGENDARY
-    -- ============================================================
     "Excalibur", "Holy Sword", "Trident", "Holy Axe", "Solarus", "Cyber Blade",
     "Aurorum", "Musara", "Thunderous Hammer", "Zoru", "Ghostwalker",
     "Venomshank", "Darkheart", "Soul Scythe", "Windforce", "Illumina",
     "Firebrand", "Solans", "Void Sword", "Dune Cleaver",
-
-    -- ============================================================
-    -- LIMITED (Original + New)
-    -- ============================================================
+    -- LIMITED
     "Empyrean Greatblade", "Oni Claws", "Cyber Scythe", "Wavelight Greatblade",
     "Prince Blade", "Hallow's Edge", "Nebula Scythe", "Dual Nebula Scythe",
     "Ether Blade", "Dual Ether Blade", "Vanguard Shield", "Empyrean Fortress",
@@ -1272,10 +1257,7 @@ local SWORD_LIST = {
     "Pumpkin PieBlade", "1B Sword", "Ball on a Stick",
     "Comically Large Flashlight", "Equinox Ball Kebab", "Bubble Wand",
     "Midas Thorn", "Rose Backsword", "Rose Greatsword",
-
-    -- ============================================================
-    -- NEWLY ADDED (Requested + Missing)
-    -- ============================================================
+    -- NEWLY ADDED
     "Cursed Relic Greatblade", "Nightmare Reaver", "Blizzard Kingscythe",
     "Allseeing Seer", "Crypt Keeper", "Turkey Slayer",
     "Resolution Rumble Champion", "Aurora Warrior", "Eclipse Backsword",
@@ -1283,203 +1265,18 @@ local SWORD_LIST = {
     "Aethertech Blade", "Sandstorm Slasher", "Evil Runics Blade",
     "Amethyst Greatsword", "Icebound Dominus", "Chroma Seal",
     "Poisoned Bunny", "Diamond Starblade",
-
-    -- Additional missing swords from Blade Ball database
-    "Witchfire Blade", "Linked Sword", "Dual Katana", "Iron Mace", "Shark Saw",
+    -- Extra
+    "Witchfire Blade", "Dual Katana", "Iron Mace", "Shark Saw",
     "Triple Katana", "Twin Hooks", "Pipe", "Warden's Sword",
     "Dual-Headed Blade", "Soul Cane", "Longsword", "Gravity Cane", "Jitte",
     "Dragon Trident", "Bisento", "Pole (1st form)", "Saber", "Shisui",
-    "True Triple Katana", "Cursed Dual Katana", "Dark Blade", "Triple Dark Blade",
+    "True Triple Katana", "Cursed Dual Katana", "Triple Dark Blade",
     "Dragon Heart", "Buddy Sword", "Gravity Blade", "Shark Anchor",
     "Midnight Blade", "Spikey Trident", "Rengoku", "Yama", "Pole (2nd Form)",
     "Flail", "Koko", "Tushita", "Dark Dagger", "Hallows Edge",
     "Witch's Broomstick", "Winged Sword", "Shadow Saber",
-    "Nature's Fang", "Briar Blade", "Frostwraith", "Blade of Eras",
-    "Blessed Blade", "Fireforge Dagger", "Dune's Edge", "Reaver Blade",
-    "Elven's Moonblade", "Doryu's Blade", "Cerberus' Fang", "Fairy's Edge",
-    "Bloodthirster", "Lycan's Claw", "Overseer's Gaze", "Aether's Dagger",
-    "Sunfire's Flare", "Dragonborne", "Chimera's Bane", "Nightblade",
-    "Crimson Sorrow", "Dragonheart Greatsword", "Phoenix Saber",
-    "Mythical Remnant", "Staff of the Worthy", "Frosted Gleam",
-    "Dual Frosted Gleam", "Remastered Linked Sword", "Light of the Illumina",
-    "The Lost Venomshank", "Ghostwalker's Vengeance", "The Ice Dagger",
-    "Darkheart's Fury", "Redcliff Claymore", "Gothic Squire's Sword",
-    "Wind's Breath", "Firebrand's Fury", "Green Energy Sword",
-    "Dual Green Energy Sword", "Dual Chroma Energy Sword", "Horseman's Sword",
-    "Wanderer's Dagger", "Enforcer's Spear", "Paladin's Edge", "King's Valor",
-    "Oathblade", "Royal Duality", "Squire's Oath", "Viscount's Blade",
-    "Celestial Lance", "Arcane's Edge", "Poison Greatsword",
-    "Greatsword of the Depths", "Blue Royal Greatsword", "Traitor's Blade",
-    "Scale Blade", "Abyssal Fang", "Ember's Rage", "Blazing Edge",
-    "Fire Blaster", "Dual Fire Blasters", "Fire Dragon", "Glacier Blade",
-    "Frost Blaster", "Dual Frost Blasters", "Frost Dragon", "Nebula Shard",
-    "Nebula Staff", "Dual Nebula Staff", "Hope's Dagger",
-    "Edge of Resurgence", "Reclaimer's Blade", "Eternal Edge",
-    "Blade of Order", "Gaia's Edge", "Stonecarver", "Shadow's Maw",
-    "Chaos Dagger", "Sylvan Blade", "Wildheart", "Chroma Fragment",
-    "Chroma Sword", "Chroma Blaster", "Dual Chroma Blasters", "Summer Scythe",
-    "Dual Summer Scythe", "Sand Dagger", "Sunflare Blade", "Coral Blade",
-    "Tidebringer", "Island Cutter", "Sundrop's Edge", "Dune Slicer",
-    "Aquamarine's Revenge", "Midsummer Blade", "Everflame Scythe",
-    "Dual Luminara", "Cascade Blade", "Mirage's Edge", "Solstice Blade",
-    "Eldermarine Blade", "Sandstorm's Edge", "Sunlit Saber", "Breeze Blade",
-    "Coral Cleaver", "Tidal Slasher", "Buccaneer's Cutlass", "Siren's Whisper",
-    "Pearl Trident", "Abyssal Wave", "Sailor's Saber", "Leviathan's Fang",
-    "Pirate King's Cutlass", "Scourge of the Seas", "Barnacle Blade",
-    "Pearl Shard", "Cosmic Wrath", "Eternal Waveblade", "Kelp Cutter",
-    "Tidal Cutlass", "Aqua Slicer", "Maelstrom Blade", "Starfish Saber",
-    "Sundown Blade", "DriftWood Dagger", "Volcanic Surge", "Crab's Cutlass",
-    "Shell Splitter", "Seashell Scimitar", "Tropical Thunder",
-    "Pirate's Slasher", "Ghostly Vengeance", "Captain's Rapier",
-    "Swashbuckler's Blade", "Privateer's Edge", "Sea Rover's Saber",
-    "Mariner's Scimitar", "Darkened Blade", "Corsair's Cleaver",
-    "Ghost Ship Blade", "Vortex Cutlass", "Kraken's Shard", "Summer Fan",
-    "Dual Summer Fans", "Palm Leaf Blade", "Tropical Cleaver",
-    "Beachcomber's Blade", "Lagoon Blade", "Coconut Crusher",
-    "Soulless Katana", "Dual Soulless Katana", "Oceanic Reaper",
-    "Reef Cutter", "Hammerhead Slicer", "Tiger Shark", "Great White Fury",
-    "Shark Sword", "Cyber Sickle", "Dual Cyber Sickle", "Sunny Dagger",
-    "Hibiscus Blade", "Lemonade Slicer", "Summer Shard", "Withered Tentacle",
-    "Depth's Grasp", "Kraken's Dominion", "Blazing Thorn", "Bronze Blade",
-    "Wooden Club", "Sparkling Dagger", "Flame Sword", "Glowing Axe",
-    "Frost Hammer", "Thunder Spear", "Arcane Staff", "Gleaming Blade",
-    "Aurora Edge", "Crimson's Cat Racket", "Plasma Spear", "Digital Saber",
-    "Cyber Edge", "Electric Katana", "Circuit Slasher", "Photon Rapier",
-    "Neon Scimitar", "Plasma Blade", "Neon Edge", "Holographic Sword",
-    "Hacker Scythe", "Dual Hacker Scythe", "Cyber Staff", "Data Dagger",
-    "Nano Katana", "Phantom Greatsword", "Phantom Edge", "Infinity Staff",
-    "Infinity Sword", "Dragon Spirit Spear", "Dragon Spirit Sword",
-    "Cyber Egg Sword", "Cyber Egg Cleaver", "Photon Spike", "Digital Dagger",
-    "Neon Naginata", "Electro Axe", "Techblade", "Neon Viper",
-    "Dual Neon Vipers", "Blackhole Gauntlets", "Aurora Protector",
-    "Aurora Shard", "Borealis", "Data Edge", "Circuit Breaker",
-    "Neon Slasher", "Super Quantum", "Steel Fang", "Iron Edge",
-    "Silver Strike", "Dragon's Claw", "Eclipse Reaver", "Robotic Arm",
-    "Cyborg Blade", "Dual Cyborg Blade", "Flowing Fists", "Amber Saber",
-    "Golden Harvest", "Harvest Cutter", "Maple Blade", "Whispering Oak",
-    "Autumn Edge", "Crimson Fall", "Champion's Edge", "Court Dominator",
-    "Speed Striker", "All-Star Striker", "Draconic Bite", "Draconic Slasher",
-    "Dragon Scythe", "Dragon Blade", "Ember Blade", "Flame Edge",
-    "Blazing Saber", "Inferno Reaver", "Winged Warrior", "Spine Chiller",
-    "Ghoul's Edge", "Phantom Fang", "Specter Slash", "Haunted Cleaver",
-    "Shadow's Bite", "Bone Breaker", "Soulshard Saber", "Midnight Reaper",
-    "Wraith's Reaver", "Scorpion Staff", "Chained Scorpion",
-    "Nightmare's Edge", "Wicked Fang", "Void Reaper", "Phantom Cleaver",
-    "Soulbound Blade", "Dusk Fang", "Grave Digger", "Moonlit Edge",
-    "Shadow's Whisper", "Blazing Azure Talon", "Dune Carver", "Scarab Fang",
-    "Pharaoh's Judgement", "Sinister Scythe", "Spectral Crescent",
-    "Pumpkin Fan", "Dual Pumpkin Fan", "Pumpkin Blade", "Rubber Chicken",
-    "Noodle Nuisance", "Stop Sign", "Meme Destroyer", "Potato",
-    "Long-nosed Scythe", "Shadow Dragger", "Ghoul's Fang", "Wraith's Slash",
-    "Specter's Bite", "Doom's Whisper", "Voidbringer", "Haunted Edge",
-    "Shadowbite", "Cursed Steel", "Spectral Cleaver", "Pumpkin Reaper",
-    "Mummy's Curse", "Hollow Blade", "Nightshade", "Nightmare's Slash",
-    "Skullsplitter", "Headless Horror", "Tombcarver", "Grim Saber",
-    "Reaper's Wrath", "Hallow's Blaster", "Jackolantern", "Bonecrusher",
-    "Nightmare Cleaver", "Bone Shredder", "Shadow Blade", "Nightstalker",
-    "Soul Slicer", "Gravebane", "Phantom Reaver", "Eternal Nightmare",
-    "Dreadspire Blade", "Soulshredder", "Hexblade", "Nightmare's Bite",
-    "Dreadclaw", "Haunting Edge", "Voidhowler", "Hellbound Cleaver",
-    "Apocalypse Edge", "Scarab's Wrath", "Mummy's Slasher",
-    "Curse of the Nile", "Wicked Reaper", "Frostbite Sword", "Polar Edge",
-    "Winter Warrior", "Frostbite Annihilator", "Ice Carver", "Frozen Edge",
-    "Snow Piercer", "Winter's Whisper", "Frostbound", "Crystal Cutter",
-    "Eternal Ice", "Northern Fury", "Frosted Blade", "Winter's Bite",
-    "Glacial Spike", "Snowstorm Sabre", "Chill Strike", "Frosted Edge",
-    "Glacier Carver", "Icy Shard", "Ice Slicer", "Snow Slicer", "Chillblade",
-    "Frostfang", "Blizzard's Fury", "Aurora's Blade", "Winter Blaster",
-    "Dual Winter Blasters", "Eternal Winter", "Polar Cutter",
-    "Aurora's Edge", "Yin Yang Cleaver", "Twilight Edge", "Event Horizon",
-    "Gravity Shard", "Chrono Saber", "Temporal Dagger", "Raging Tempest",
-    "Fury Claw", "Frozen Dagger", "Icicle Spike", "Snowblade",
-    "Blizzard Bite", "Frosted Fang", "Snow Slasher", "Crystal Shard",
-    "Northern Blade", "Glacial Dominance", "Polar Fury", "Glacial Strike",
-    "Frostfire Blade", "Snowball Slasher", "Aurora Cutter", "Frosted King",
-    "Frostbite Saber", "Winter Katana", "Snowball Cleaver", "Snowman Blade",
-    "Frosted Dagger", "Icebound Saber", "Shivering Strike", "Eternal Staff",
-    "Eternal Scythe", "Halberd", "Autumn Carver", "Cornucopia Blade",
-    "Feastbringer", "Falling Edge", "Harvest Light", "Amber Edge",
-    "Rustic Edge", "Harvest Fang", "Autumn Saber", "Golden Reaper",
-    "Maple Reaper", "Scarlet Fury", "Harvest Glow", "Autumn Sovereign",
-    "Noble Fang", "Sovereign Edge", "Royal Crescent", "King's Judgement",
-    "Crownslayer", "Thronebreaker", "Cryo Shard", "Candy Cane Cutter",
-    "Frost Spark Saber", "Snowbound Shard", "Merry Gleam",
-    "Aurora Dancer", "Polar King's Blade", "Northstar Reaper",
-    "Snowflake Edge", "Frostbane", "Yuleflame", "Infernal Edge",
-    "Celestial Whisper", "Polar Fang", "Frosted Saber", "Jingle Blade",
-    "Glacial Edge", "Icicle Pike", "Pine Blade", "Winter Fang",
-    "Frostlight Saber", "Crystal Flare", "Aurora Saber",
-    "Candycane Blaster", "Dual Candycane Blasters", "Icy Shardblade",
-    "Northern Warrior", "Candy Cutter", "Frostbite Slash",
-    "Polar Cleaver", "Blizzard Fang", "Frostbound Regal Edge",
-    "Frost Monarch Saber", "Glacial Crown", "Frosted Antler", "Antler Blade",
-    "Aurora Antlers", "Reindeer Blade", "Reindeer", "Icicle Strike",
-    "Snowstorm Blade", "Frozen Star", "Iced Shard", "Festive Slice",
-    "Holiday Cleaver", "Crystal Fang", "Everfrost Blade", "Frosted Slash",
-    "Aurora Warden", "Frostbite Dagger", "Crystal Dagger", "Aurora Carver",
-    "Candycane Cleaver", "Holiday Saber", "Tinsel Edge",
-    "Snowflake Cutter", "Pine Shard", "Icy Whisper", "Frostlight Fang",
-    "Polar Reaver", "Wintery Greatblade", "Fragmented Wallblade",
-    "Christmas Staff", "Jolly Fan", "Dual Jolly Fan", "Icicle Fang",
-    "Snowdrift Saber", "Polar Slicer", "Blizzard Slayer", "Blizzard Katana",
-    "Emperor Blade", "Frosty Dagger", "Snowboard Edge", "Icy Puck Blade",
-    "Blizzard Skater", "Crystal Blade", "Iced Avenger", "Emberflare Blade",
-    "Celebration Blade", "Clockwork Cutlass", "Sparkle Saber",
-    "Midnight Cleaver", "Countdown Edge", "Emberstrike", "Golden Hour Blade",
-    "New Dawn Reaver", "Firework Fang", "New Year's Sickles",
-    "New Year's Set", "Celebration Spark", "Midnight Reaver",
-    "Boundless Reaver", "Eternal Slasher", "Black Hole Edge", "Void Shard",
-    "Chrono Blade", "Temporal Shard", "Grim Sever", "Shadowed Slasher",
-    "Confetti Cleaver", "New Year's Resolve", "Clockwork Cutter",
-    "Radiant Countdown", "Dawn Shard", "Starlight Saber", "Draconic Bow",
-    "Timeless Greatsword", "Aurora Fang", "Sparkler Saber",
-    "Celestial Saber", "Glittering Horizon", "New Year's Lance",
-    "Glacial Shard", "Radiant Edge", "Aligned Constellation",
-    "Golden Flare", "Celebration Edge", "Resolution Reaver",
-    "Aurora Slash", "Crimson Gleam", "Ecliptic Fang", "Lunar Blade",
-    "Firework Fighter", "New Years Staff", "New Years Fan",
-    "Dual New Years Fan", "Neon Shard", "Synth Saber", "Mechslayer Blade",
-    "Hyperion Blade", "Silken Fang", "Venom Edge", "Voidweaver's Fang",
-    "Arachnoblade", "Void Weaver", "Sparkler Edge", "Countdown Cutter",
-    "Celebration Cleaver", "Midnight Fang", "Firework Edge", "Chrono Shard",
-    "Eclipse Edge", "Lunar Bloom", "Eternal Spark", "Chrono Edge",
-    "Lunar Aegis", "Solar Flare Blade", "Starlight Spear", "Golden Fang",
-    "Dual Golden Fang", "Golden Scythe", "Bamboo Fang", "Coiled Blade",
-    "Lunar Edge", "Serpent's Whisper", "Venom Fang",
-    "Dual Iced Energy Blades", "Ghost Slicer", "Serpents Staff",
-    "Twilight Fang", "Glyphfang", "Mystic Edge", "Rune Carver",
-    "Solblade Sentinel", "Ancient Iceblade", "Ancient Trident",
-    "Eternal Shield", "Jaded Staff", "Gilded Loveblade", "Blushfang Dagger",
-    "Rosevine Blade", "Heartpiercer Rapier", "Twilight Serenade Blade",
-    "Enamored Edge", "Rosethorn Stiletto", "Luminara Saber",
-    "Passionflare Rapier", "Amour's Radiance", "Love Sickle",
-    "Dual Love Sickle", "Fury Fang", "Crimson Embrace", "Passionfang Edge",
-    "Enchanted Roseblade", "Void Piercer", "Tenderstrike Dagger",
-    "Lustrous Fang", "Blazing Romance", "Devotion's Edge", "Rose Axe",
-    "Rose Twinblade", "Cupid's Staff", "Titansteel Saber", "Oblivion Edge",
-    "Celestial Vanguard", "Foxfang Dagger", "Spiritbound Katana",
-    "Ethereal Kitsune Blade", "Kitsune Blade", "Dual Kitsune Blade",
-    "Kitsune", "Twisted Love Dagger", "Crimson Heartpiercer",
-    "Fallen Cherub's Blade", "Corrupted Bow", "Ironfang", "Runeblade",
-    "Shadowpiercer", "Oblivion Fang", "Twisted Rosemary Blade",
-    "Skull King", "Hex Slicer", "Dawnpiercer", "Loving Backblade",
-    "Stormfang", "Voidshatter", "Meteor Fang", "Solar Saber",
-    "Lunar Slicer", "Galactic Striker", "Void Breaker", "Eclipse Slasher",
-    "Dual Astral Vanguard", "Astral Vanguard", "Poison Ivy", "Poison Blade",
-    "Shackled Celestial", "Cosmic Edge", "Zero Saber", "Asteroid Fang",
-    "Voidwalker Blade", "Solar Iceblade", "Nebula Warrior",
-    "Deepsea Reaver", "Kraken Fang", "Aquatic Bow", "Holo Reaper Blade",
-    "Neon Slicer", "Cyber Fang", "Holo Saber", "Voltstrike Saber",
-    "Cybernetic Edge", "Mechwave Cutter", "Titanium Reaver",
-    "Plasma Rift Blade", "Mech Laser Cannon", "Dual Mech Laser Cannon",
-    "Flow Blade", "Chrono Slasher", "Hyperblade Prototype",
-    "Golden Slasher", "Voided Saber", "Techno Fang", "Augmented Saber",
-    "Electric Reaver", "Void Circuit Blade", "Fortune Cleaver",
-    "Spiritbloom Dagger", "Verdant Bloom Saber", "Moonlit Blossom Blade",
-    "Bloom Katana", "Dual Bloom Katana", "Bloom Shuriken", "Mech Staff",
-    "Holo Fan", "Dual Holo Fan", "Vortex Striker", "Hyperion Saber",
-    "Titanfall Edge", "Electroclash Blade", "Void Vanguard", "Mecha Axe",
-    "Warden's Edge", "Voidborn Reaver", "Survivor's Fang",
+    "Void Reaper", "Phantom Cleaver", "Soulbound Blade", "Dusk Fang",
+    "Grave Digger", "Moonlit Edge", "Shadow's Whisper",
     "Stormpiercer Blade", "Gale Sabre", "Thunderfall Edge",
     "Chroma Pearlblade", "Eclipse Warblade", "Fractured Protocol",
     "Super Horizon", "Omega Edge", "Samurai's Backblade", "Petalblade",
@@ -1534,7 +1331,7 @@ local SWORD_LIST = {
     "Cybotic Scythe", "Netherfang", "Frost Reaper", "Aurora's Wrath",
     "Chrono Fang", "Neon Tempest", "Ban Hammer", "Golden Ban Hammer",
     "InceptionTime's Hammer", "Bobber", "Princess Fan", "HardRockStick",
-    "Aurelius", "Failsafe", "Kelven", "Pillar", "Small Sapling", "Skib",
+    "Failsafe", "Kelven", "Pillar", "Small Sapling", "Skib",
     "Nothing at All", "Frog Devsword", "Dot Sword", "Dot", "Titan Blade",
     "Sci Fi Axe", "Sci Fi Blade", "Eternal Autumn", "Harvest Reaper",
     "Amethyst Slicer", "Regal Sovereign", "Royal Stick",
@@ -2041,7 +1838,7 @@ task.spawn(function()
             end)
         end
     end)
-end)
+end
 
 getgenv().skinChanger=false; getgenv().skinChangerEnabled=false
 getgenv().swordModel=""; getgenv().swordAnimations=""; getgenv().swordFX=""
@@ -2091,7 +1888,8 @@ do
     NeverZen.Theme = DARKER_THEME
 
     -- ============================================================
-    -- SWORD PICKER MODAL (BLACK × WHITE, category filter in Safe Mode)
+    -- SWORD PICKER MODAL (1000x660)
+    -- LEFT = all swords with star toggle, RIGHT = favorites
     -- ============================================================
     function NeverZen:CreateSwordPicker()
         local ScreenGui = Instance.new("ScreenGui")
@@ -2103,6 +1901,58 @@ do
         table.insert(NeverZen.Guis, ScreenGui)
         NeverZen.ProtectGui(ScreenGui)
 
+        -- ============================================================
+        -- FAVORITES PERSISTENCE
+        -- ============================================================
+        local FAVORITES_FILE = "S14xFavoriteSwords.json"
+
+        local function loadFavoritesFromDisk()
+            local favs = {}
+            pcall(function()
+                if isfile and isfile(FAVORITES_FILE) then
+                    local content = readfile(FAVORITES_FILE)
+                    if content and content ~= "" then
+                        local dec = HttpService:JSONDecode(content)
+                        if type(dec) == "table" then favs = dec end
+                    end
+                end
+            end)
+            return favs
+        end
+
+        local function saveFavoritesToDisk()
+            pcall(function()
+                if writefile then
+                    writefile(FAVORITES_FILE, HttpService:JSONEncode(NeverZen.FavoriteSwords or {}))
+                end
+            end)
+        end
+
+        NeverZen.FavoriteSwords = NeverZen.FavoriteSwords or loadFavoritesFromDisk()
+        NeverZen.FavoritesLookup = {}
+        for _, name in ipairs(NeverZen.FavoriteSwords) do
+            NeverZen.FavoritesLookup[name] = true
+        end
+
+        local function isFav(name) return NeverZen.FavoritesLookup[name] == true end
+        local function toggleFav(name)
+            if NeverZen.FavoritesLookup[name] then
+                NeverZen.FavoritesLookup[name] = nil
+                for i = #NeverZen.FavoriteSwords, 1, -1 do
+                    if NeverZen.FavoriteSwords[i] == name then
+                        table.remove(NeverZen.FavoriteSwords, i)
+                    end
+                end
+            else
+                NeverZen.FavoritesLookup[name] = true
+                table.insert(NeverZen.FavoriteSwords, name)
+            end
+            saveFavoritesToDisk()
+        end
+
+        -- ============================================================
+        -- UI SHELL
+        -- ============================================================
         local Backdrop = Instance.new("TextButton")
         Backdrop.Parent = ScreenGui
         Backdrop.Size = UDim2.new(1,0,1,0)
@@ -2117,7 +1967,7 @@ do
         Frame.Parent = ScreenGui
         Frame.AnchorPoint = Vector2.new(0.5,0.5)
         Frame.Position = UDim2.new(0.5,0,0.5,0)
-        Frame.Size = UDim2.new(0, 540, 0, 620)
+        Frame.Size = UDim2.new(0, 1000, 0, 660)
         Frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
         Frame.BorderSizePixel = 0
         Frame.ZIndex = 2
@@ -2128,11 +1978,12 @@ do
         FrameStroke.Color = Color3.fromRGB(55,55,55)
         FrameStroke.Parent = Frame
 
+        -- Title (left)
         local Title = Instance.new("TextLabel")
         Title.Parent = Frame
         Title.BackgroundTransparency = 1
         Title.Position = UDim2.new(0,20,0,14)
-        Title.Size = UDim2.new(1,-160,0,26)
+        Title.Size = UDim2.new(0, 470, 0, 26)
         Title.Font = Enum.Font.GothamBold
         Title.Text = "SELECT SWORD"
         Title.TextColor3 = Color3.fromRGB(255,255,255)
@@ -2140,19 +1991,7 @@ do
         Title.TextXAlignment = Enum.TextXAlignment.Left
         Title.ZIndex = 3
 
-        local FilterTag = Instance.new("TextLabel")
-        FilterTag.Parent = Frame
-        FilterTag.BackgroundTransparency = 1
-        FilterTag.AnchorPoint = Vector2.new(1,0)
-        FilterTag.Position = UDim2.new(1,-52,0,14)
-        FilterTag.Size = UDim2.new(0,260,0,22)
-        FilterTag.Font = Enum.Font.GothamMedium
-        FilterTag.Text = ""
-        FilterTag.TextColor3 = Color3.fromRGB(200,200,200)
-        FilterTag.TextSize = 12
-        FilterTag.TextXAlignment = Enum.TextXAlignment.Right
-        FilterTag.ZIndex = 3
-
+        -- Close
         local Close = Instance.new("TextButton")
         Close.Parent = Frame
         Close.AnchorPoint = Vector2.new(1,0)
@@ -2173,10 +2012,46 @@ do
         CloseStroke.Color = Color3.fromRGB(55,55,55)
         CloseStroke.Parent = Close
 
+        -- Filter (under title, left)
+        local FilterTag = Instance.new("TextLabel")
+        FilterTag.Parent = Frame
+        FilterTag.BackgroundTransparency = 1
+        FilterTag.Position = UDim2.new(0,20,0,42)
+        FilterTag.Size = UDim2.new(0, 470, 0, 18)
+        FilterTag.Font = Enum.Font.GothamMedium
+        FilterTag.Text = ""
+        FilterTag.TextColor3 = Color3.fromRGB(200,200,200)
+        FilterTag.TextSize = 12
+        FilterTag.TextXAlignment = Enum.TextXAlignment.Left
+        FilterTag.ZIndex = 3
+
+        -- Favorites header (right)
+        local FavHeader = Instance.new("TextLabel")
+        FavHeader.Parent = Frame
+        FavHeader.BackgroundTransparency = 1
+        FavHeader.Position = UDim2.new(0, 510, 0, 14)
+        FavHeader.Size = UDim2.new(0, 420, 0, 26)
+        FavHeader.Font = Enum.Font.GothamBold
+        FavHeader.Text = "★ FAVORITES"
+        FavHeader.TextColor3 = Color3.fromRGB(255, 215, 0)
+        FavHeader.TextSize = 18
+        FavHeader.TextXAlignment = Enum.TextXAlignment.Left
+        FavHeader.ZIndex = 3
+
+        -- Vertical divider
+        local Divider = Instance.new("Frame")
+        Divider.Parent = Frame
+        Divider.Position = UDim2.new(0, 496, 0, 20)
+        Divider.Size = UDim2.new(0, 1, 1, -40)
+        Divider.BackgroundColor3 = Color3.fromRGB(40,40,40)
+        Divider.BorderSizePixel = 0
+        Divider.ZIndex = 3
+
+        -- Search box (left)
         local Search = Instance.new("Frame")
         Search.Parent = Frame
-        Search.Position = UDim2.new(0,20,0,54)
-        Search.Size = UDim2.new(1,-40,0,38)
+        Search.Position = UDim2.new(0,20,0,66)
+        Search.Size = UDim2.new(0, 470, 0, 38)
         Search.BackgroundColor3 = Color3.fromRGB(15,15,15)
         Search.BorderSizePixel = 0
         Search.ZIndex = 3
@@ -2202,10 +2077,11 @@ do
         SearchBox.ClearTextOnFocus = false
         SearchBox.ZIndex = 3
 
+        -- Left scroller (all swords)
         local Scroller = Instance.new("ScrollingFrame")
         Scroller.Parent = Frame
-        Scroller.Position = UDim2.new(0,20,0,104)
-        Scroller.Size = UDim2.new(1,-40,1,-124)
+        Scroller.Position = UDim2.new(0, 20, 0, 116)
+        Scroller.Size = UDim2.new(0, 470, 1, -136)
         Scroller.BackgroundColor3 = Color3.fromRGB(10,10,10)
         Scroller.BorderSizePixel = 0
         Scroller.CanvasSize = UDim2.new(0,0,0,0)
@@ -2231,16 +2107,42 @@ do
         ListPad.PaddingRight = UDim.new(0,6)
         ListPad.Parent = Scroller
 
-        local function updateCanvas()
-            Scroller.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 12)
-        end
-        ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
+        -- Right scroller (favorites)
+        local FavScroller = Instance.new("ScrollingFrame")
+        FavScroller.Parent = Frame
+        FavScroller.Position = UDim2.new(0, 510, 0, 54)
+        FavScroller.Size = UDim2.new(0, 470, 1, -74)
+        FavScroller.BackgroundColor3 = Color3.fromRGB(10,10,10)
+        FavScroller.BorderSizePixel = 0
+        FavScroller.CanvasSize = UDim2.new(0,0,0,0)
+        FavScroller.ScrollBarThickness = 6
+        FavScroller.ScrollBarImageColor3 = Color3.fromRGB(160,160,160)
+        FavScroller.ZIndex = 3
+        local FavScrollCorner = Instance.new("UICorner")
+        FavScrollCorner.CornerRadius = UDim.new(0,4)
+        FavScrollCorner.Parent = FavScroller
+        local FavScrollStroke = Instance.new("UIStroke")
+        FavScrollStroke.Color = Color3.fromRGB(40,40,40)
+        FavScrollStroke.Parent = FavScroller
 
+        local FavLayout = Instance.new("UIListLayout")
+        FavLayout.Parent = FavScroller
+        FavLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        FavLayout.Padding = UDim.new(0,3)
+
+        local FavPad = Instance.new("UIPadding")
+        FavPad.PaddingTop = UDim.new(0,6)
+        FavPad.PaddingBottom = UDim.new(0,6)
+        FavPad.PaddingLeft = UDim.new(0,6)
+        FavPad.PaddingRight = UDim.new(0,6)
+        FavPad.Parent = FavScroller
+
+        -- Empty state labels
         local EmptyLabel = Instance.new("TextLabel")
         EmptyLabel.Parent = Frame
         EmptyLabel.AnchorPoint = Vector2.new(0.5,0.5)
-        EmptyLabel.Position = UDim2.new(0.5, 0, 0.5, 20)
-        EmptyLabel.Size = UDim2.new(1,-80, 0, 60)
+        EmptyLabel.Position = UDim2.new(0.255, 0, 0.55, 0)
+        EmptyLabel.Size = UDim2.new(0, 400, 0, 60)
         EmptyLabel.BackgroundTransparency = 1
         EmptyLabel.Font = Enum.Font.GothamMedium
         EmptyLabel.Text = ""
@@ -2250,8 +2152,38 @@ do
         EmptyLabel.Visible = false
         EmptyLabel.ZIndex = 5
 
+        local FavEmptyLabel = Instance.new("TextLabel")
+        FavEmptyLabel.Parent = Frame
+        FavEmptyLabel.AnchorPoint = Vector2.new(0.5,0.5)
+        FavEmptyLabel.Position = UDim2.new(0.745, 0, 0.55, 0)
+        FavEmptyLabel.Size = UDim2.new(0, 400, 0, 60)
+        FavEmptyLabel.BackgroundTransparency = 1
+        FavEmptyLabel.Font = Enum.Font.GothamMedium
+        FavEmptyLabel.Text = "Click ☆ on any sword to add it to favorites"
+        FavEmptyLabel.TextColor3 = Color3.fromRGB(140,140,140)
+        FavEmptyLabel.TextSize = 13
+        FavEmptyLabel.TextWrapped = true
+        FavEmptyLabel.Visible = true
+        FavEmptyLabel.ZIndex = 5
+
+        local function updateCanvas()
+            Scroller.CanvasSize = UDim2.new(0, 0, 0, ListLayout.AbsoluteContentSize.Y + 12)
+        end
+        local function updateFavCanvas()
+            FavScroller.CanvasSize = UDim2.new(0, 0, 0, FavLayout.AbsoluteContentSize.Y + 12)
+            FavEmptyLabel.Visible = (#NeverZen.FavoriteSwords == 0)
+        end
+        ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
+        FavLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateFavCanvas)
+
+        -- ============================================================
+        -- ROW BUILDER
+        -- ============================================================
         local rows = {}
+        local favRows = {}
         local onPickCallback = nil
+        local lastStarClick = 0
+        local rebuildFavorites
 
         local function currentCategoryFilter()
             if not Config.SafeSwordChanger then return nil end
@@ -2260,25 +2192,100 @@ do
             return GetSwordCategory(real)
         end
 
+        local function makeSwordRow(sword, parent)
+            local Row = Instance.new("TextButton")
+            Row.Parent = parent
+            Row.Size = UDim2.new(1,-14,0,32)
+            Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+            Row.BorderSizePixel = 0
+            Row.Text = ""
+            Row.AutoButtonColor = false
+            Row.ZIndex = 4
+
+            local RowCorner = Instance.new("UICorner")
+            RowCorner.CornerRadius = UDim.new(0,4)
+            RowCorner.Parent = Row
+
+            local Star = Instance.new("TextButton")
+            Star.Parent = Row
+            Star.AnchorPoint = Vector2.new(0, 0.5)
+            Star.Position = UDim2.new(0, 6, 0.5, 0)
+            Star.Size = UDim2.new(0, 24, 0, 24)
+            Star.BackgroundTransparency = 1
+            Star.Font = Enum.Font.GothamBold
+            Star.TextSize = 22
+            local filled = isFav(sword)
+            Star.Text = filled and "★" or "☆"
+            Star.TextColor3 = filled and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(120,120,120)
+            Star.ZIndex = 6
+            Star.AutoButtonColor = false
+
+            local NameLabel = Instance.new("TextLabel")
+            NameLabel.Parent = Row
+            NameLabel.BackgroundTransparency = 1
+            NameLabel.Position = UDim2.new(0, 38, 0, 0)
+            NameLabel.Size = UDim2.new(1, -44, 1, 0)
+            NameLabel.Font = Enum.Font.Gotham
+            NameLabel.Text = sword
+            NameLabel.TextColor3 = Color3.fromRGB(255,255,255)
+            NameLabel.TextSize = 14
+            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            NameLabel.ZIndex = 5
+
+            Star.MouseButton1Click:Connect(function()
+                lastStarClick = os.clock()
+                toggleFav(sword)
+                local nowFilled = isFav(sword)
+                for _, r in ipairs(rows) do
+                    if r.sword == sword then
+                        r.Star.Text = nowFilled and "★" or "☆"
+                        r.Star.TextColor3 = nowFilled and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(120,120,120)
+                    end
+                end
+                for _, r in ipairs(favRows) do
+                    if r.sword == sword then
+                        r.Star.Text = nowFilled and "★" or "☆"
+                        r.Star.TextColor3 = nowFilled and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(120,120,120)
+                    end
+                end
+                if rebuildFavorites then rebuildFavorites() end
+            end)
+
+            Row.MouseEnter:Connect(function()
+                Row.BackgroundColor3 = Color3.fromRGB(45,45,45)
+            end)
+            Row.MouseLeave:Connect(function()
+                Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+            end)
+            Row.MouseButton1Click:Connect(function()
+                if os.clock() - lastStarClick < 0.1 then return end
+                if onPickCallback then
+                    pcall(onPickCallback, sword)
+                end
+                ScreenGui.Enabled = false
+            end)
+
+            return { Row = Row, Star = Star, sword = sword }
+        end
+
         local function Rebuild(searchFilter)
-            for _, r in ipairs(rows) do r:Destroy() end
+            for _, r in ipairs(rows) do r.Row:Destroy() end
             rows = {}
             searchFilter = searchFilter and searchFilter:lower() or ""
 
             local catFilter = currentCategoryFilter()
 
             if not Config.SafeSwordChanger then
-                FilterTag.Text = "FILTER OFF — all swords"
+                FilterTag.Text = "FILTER OFF — showing all swords"
                 FilterTag.TextColor3 = Color3.fromRGB(255,180,120)
             elseif catFilter then
                 FilterTag.Text = "FILTER: " .. tostring(catFilter)
                 FilterTag.TextColor3 = Color3.fromRGB(130,255,150)
             else
-                FilterTag.Text = "FILTER: pending (no real sword)"
+                FilterTag.Text = "FILTER: pending (no real sword equipped)"
                 FilterTag.TextColor3 = Color3.fromRGB(230,220,110)
             end
 
-            -- Ranked list: prefix matches first, then word-boundary, then anywhere.
             local candidates = {}
             for _, sword in ipairs(SWORD_LIST) do
                 local catOK = true
@@ -2293,11 +2300,8 @@ do
                         local pos = low:find(searchFilter, 1, true)
                         if pos then
                             local rank = 3
-                            if pos == 1 then
-                                rank = 1
-                            elseif low:sub(pos - 1, pos - 1) == " " then
-                                rank = 2
-                            end
+                            if pos == 1 then rank = 1
+                            elseif low:sub(pos - 1, pos - 1) == " " then rank = 2 end
                             table.insert(candidates, { name = sword, rank = rank, pos = pos })
                         end
                     end
@@ -2311,47 +2315,11 @@ do
                 return a.name < b.name
             end)
 
-            local count = #candidates
             for _, entry in ipairs(candidates) do
-                local sword = entry.name
-                local Row = Instance.new("TextButton")
-                Row.Parent = Scroller
-                Row.Size = UDim2.new(1,-14,0,32)
-                Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
-                Row.BorderSizePixel = 0
-                Row.Text = sword
-                Row.TextColor3 = Color3.fromRGB(255,255,255)
-                Row.Font = Enum.Font.Gotham
-                Row.TextSize = 14
-                Row.TextXAlignment = Enum.TextXAlignment.Left
-                Row.AutoButtonColor = false
-                Row.ZIndex = 4
-
-                local RowCorner = Instance.new("UICorner")
-                RowCorner.CornerRadius = UDim.new(0,4)
-                RowCorner.Parent = Row
-
-                local rowPad = Instance.new("UIPadding")
-                rowPad.PaddingLeft = UDim.new(0,12)
-                rowPad.Parent = Row
-
-                Row.MouseEnter:Connect(function()
-                    Row.BackgroundColor3 = Color3.fromRGB(45,45,45)
-                end)
-                Row.MouseLeave:Connect(function()
-                    Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
-                end)
-                Row.MouseButton1Click:Connect(function()
-                    if onPickCallback then
-                        pcall(onPickCallback, sword)
-                    end
-                    ScreenGui.Enabled = false
-                end)
-
-                table.insert(rows, Row)
+                table.insert(rows, makeSwordRow(entry.name, Scroller))
             end
 
-            if count == 0 then
+            if #candidates == 0 then
                 EmptyLabel.Visible = true
                 if searchFilter ~= "" then
                     EmptyLabel.Text = "No results for \"" .. searchFilter .. "\""
@@ -2367,6 +2335,18 @@ do
             updateCanvas()
         end
 
+        rebuildFavorites = function()
+            for _, r in ipairs(favRows) do r.Row:Destroy() end
+            favRows = {}
+            for _, sword in ipairs(NeverZen.FavoriteSwords) do
+                table.insert(favRows, makeSwordRow(sword, FavScroller))
+            end
+            updateFavCanvas()
+        end
+
+        -- ============================================================
+        -- WIRING
+        -- ============================================================
         SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
             Rebuild(SearchBox.Text)
         end)
@@ -2387,6 +2367,7 @@ do
         end)
 
         Rebuild("")
+        rebuildFavorites()
 
         return {
             Open = function(self, cb)
@@ -2394,10 +2375,11 @@ do
                 onPickCallback = cb
                 SearchBox.Text = ""
                 Rebuild("")
+                rebuildFavorites()
                 ScreenGui.Enabled = true
             end,
             Close = function() ScreenGui.Enabled = false end,
-            Refresh = function() Rebuild(SearchBox.Text) end,
+            Refresh = function() Rebuild(SearchBox.Text) rebuildFavorites() end,
         }
     end
 
@@ -3063,7 +3045,6 @@ do
                         local SizeScale = math.clamp((Input.Position.X - con.AbsolutePosition.X) / con.AbsoluteSize.X, 0, 1)
                         local Main = ((cfg.Max - cfg.Min) * SizeScale) + cfg.Min
                         local Value = Main
-                        -- snap to step (e.g. 5 for CPS) BEFORE rounding
                         if cfg.Step and cfg.Step > 0 then
                             Value = math.floor(Value / cfg.Step + 0.5) * cfg.Step
                             Value = math.clamp(Value, cfg.Min, cfg.Max)
@@ -3542,8 +3523,6 @@ MacroSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 local CpsLabel = MacroSection:AddLabel("CPS: " .. tostring(Config.TargetCPS))
 
--- CPS slider — snaps in steps of 5 (200, 205, 210, …)
--- No notification, no per-tick disk write (fixes lag while dragging).
 local CpsSlider
 CpsSlider = MacroSection:AddSlider({
     Name = "CPS",
