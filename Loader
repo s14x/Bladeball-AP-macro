@@ -359,7 +359,7 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect(function()
-        if not (Config.Spamming or Config.TriggerBot or Config.AutoParry) then return end
+        if not (Config.Spamming or Config.TriggerBot) then return end
         if SpamAnimParries < 5 then
             SpamAnimParries += 1
             task.delay(0.05, function()
@@ -383,7 +383,7 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccessAll.OnClientEvent:Connect(function()
-        if not (Config.Spamming or Config.TriggerBot or Config.AutoParry) then return end
+        if not (Config.Spamming or Config.TriggerBot) then return end
         local char = GetCharacter()
         if not char then return end
         local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -515,7 +515,6 @@ local function CalcParryAccuracy(zoomies)
     return ping_threshold + math.max(speed / speed_divisor, 9.5)
 end
 
--- ---- per-frame caches ----
 local _frameParryData  = nil
 local _frameShouldFire = nil
 local _frameBlockOk    = nil
@@ -567,7 +566,7 @@ pcall(function()
 end)
 
 -- ============================================================
--- AUTO PARRY LOOP  (Macro-tab helper — distance-based, independent)
+-- AUTO PARRY LOOP
 -- ============================================================
 local APParryData = {}
 task.spawn(function()
@@ -581,7 +580,7 @@ end)
 
 RunService.PreSimulation:Connect(function()
     _resetFrameCaches()
-    if not Config.AutoParry then return end
+    if not Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
     if not char or not char.PrimaryPart then return end
@@ -611,7 +610,6 @@ RunService.PreSimulation:Connect(function()
             if now - pdata.LastParry >= 0.35 then
                 pdata.LastParry = now
                 FireParry()
-                if Config.AutoParryAnimationFix then PlaySingleParryAnimation() end
             end
         end
     end
@@ -642,20 +640,33 @@ RunService.PreSimulation:Connect(function(dt)
 end)
 
 -- ============================================================
--- TRIGGERBOT LOOP  (EAGLE-style — fires as soon as a ball targets you,
---                   no distance check, 0.2s cooldown. HOLD-based.)
+-- TRIGGERBOT LOOP  (HOLD-based, mirrors UI toggle visually)
 -- ============================================================
-local TBToggle
-local TBLastEffective = nil
-local TBCooldownUntil = 0
+local TBTriggerData = {}
+local TBToggle              -- forward declaration (UI is built later)
+local TBLastEffective = nil -- tracks last effective state, to sync UI visuals
+
+task.spawn(function()
+    while true do
+        task.wait(2)
+        for ball in pairs(TBTriggerData) do
+            if not ball or not ball.Parent then TBTriggerData[ball] = nil end
+        end
+    end
+end)
 
 RunService.PreSimulation:Connect(function()
     _resetFrameCaches()
 
+    -- Poll the key every frame — no state can ever desync.
     local Held = Config.TriggerBotKeybind ~= nil
         and UserInputService:IsKeyDown(Config.TriggerBotKeybind)
     local Effective = Config.TriggerBot or Held
 
+    -- Mirror effective state onto the UI toggle.
+    -- SetVisualOnly only moves the knob / recolors — it does NOT touch
+    -- Config.TriggerBot, does NOT fire the toggle callback, does NOT
+    -- save the file, does NOT send a notification. Zero spam.
     if TBLastEffective ~= Effective then
         TBLastEffective = Effective
         if TBToggle and TBToggle.SetVisualOnly then
@@ -664,7 +675,6 @@ RunService.PreSimulation:Connect(function()
     end
 
     if not Effective then return end
-    if os.clock() < TBCooldownUntil then return end
     if Config.Spamming then return end
     if not _capturedRemote then return end
     local char = GetCharacter()
@@ -676,13 +686,32 @@ RunService.PreSimulation:Connect(function()
     local balls = System.ball.get_all()
     for _, ball in pairs(balls) do
         if not ball or not ball.Parent then continue end
-        if ball:GetAttribute("target") ~= LocalPlayer.Name then continue end
+        local zoomies = ball:FindFirstChild("zoomies")
+        if not zoomies then continue end
 
-        -- EAGLE-style: fire immediately when a ball is assigned to you.
-        TBCooldownUntil = os.clock() + 0.2
-        if Config.TriggerBotAnimationFix then PlaySingleParryAnimation() end
-        FireParry()
-        break
+        if ball:GetAttribute("target") ~= LocalPlayer.Name then continue end
+        if ball:FindFirstChild("ComboCounter") then continue end
+
+        local td = TBTriggerData[ball]
+        if not td then
+            td = { Triggered = false }
+            TBTriggerData[ball] = td
+            ball:GetAttributeChangedSignal("target"):Connect(function()
+                td.Triggered = false
+            end)
+        end
+
+        if td.Triggered then continue end
+
+        local distance = (char.PrimaryPart.Position - ball.Position).Magnitude
+        local parry_accuracy = CalcParryAccuracy(zoomies)
+
+        if distance <= parry_accuracy then
+            td.Triggered = true
+            if Config.TriggerBotAnimationFix then PlaySingleParryAnimation() end
+            FireParry()
+            break
+        end
     end
 end)
 
@@ -1598,6 +1627,9 @@ do
 
     NeverZen.Theme = DARKER_THEME
 
+    -- ============================================================
+    -- SWORD PICKER MODAL (BLACK × WHITE, category filter in Safe Mode)
+    -- ============================================================
     function NeverZen:CreateSwordPicker()
         local ScreenGui = Instance.new("ScreenGui")
         ScreenGui.Name = NeverZen:RandomString()
@@ -1905,6 +1937,9 @@ do
         }
     end
 
+    -- ============================================================
+    -- MAIN WINDOW
+    -- ============================================================
     function NeverZen.new(config)
         config = config or {}
         config.Name = config.Name or "S14x"
@@ -2392,6 +2427,8 @@ do
 
                     return {
                         SetValue = function(self, v) cfg.Default = v setValue(v) cfg.Callback(v, cfg) end,
+                        -- Visual-only update: moves the knob and recolors, but does NOT
+                        -- touch cfg.Default, does NOT fire the callback (no save, no notify).
                         SetVisualOnly = function(self, v)
                             color.BackgroundColor3 = v and NeverZen.Theme.Hightlight or Color3.fromRGB(152,152,152)
                             if v then
@@ -3024,32 +3061,16 @@ local SetTab   = UI.Window:AddTab({ Name = "Settings", Icon = "settings" })
 local MacroSection = MacroTab:AddSection({ Name = "Infinite Tsukuyomi" })
 
 local SpamToggle = MacroSection:AddToggle({
-    Name = "Spam",
+    Name = "Active",
     Default = Config.Spamming,
     Callback = function(v)
         Config.Spamming = v
+        Config.AutoParry = v
         saveConfig()
         timeAccumulator = 0
         if v then SpamParryAnimation() end
-        NZNotification.new("Spam", v and "ON" or "OFF", 2)
+        NZNotification.new("Infinite Tsukuyomi", v and "ACTIVATED" or "RELEASED", 2)
     end,
-})
-
--- AutoParry — intelligent distance-based helper.
-local AutoParryToggle = MacroSection:AddToggle({
-    Name = "AutoParry",
-    Default = Config.AutoParry,
-    Callback = function(v)
-        Config.AutoParry = v
-        saveConfig()
-        NZNotification.new("AutoParry", v and "ON" or "OFF", 2)
-    end,
-})
-
-local AutoParryAnimFix = MacroSection:AddToggle({
-    Name = "AutoParry Animation Fix",
-    Default = Config.AutoParryAnimationFix,
-    Callback = function(v) Config.AutoParryAnimationFix = v saveConfig() end,
 })
 
 local SafeToggle = MacroSection:AddToggle({
@@ -3059,7 +3080,7 @@ local SafeToggle = MacroSection:AddToggle({
 })
 
 local MacroAnimFix = MacroSection:AddToggle({
-    Name = "Spam Animation Fix",
+    Name = "Animation Fix",
     Default = Config.MacroAnimationFix,
     Callback = function(v) Config.MacroAnimationFix = v saveConfig() end,
 })
@@ -3082,14 +3103,15 @@ CpsSlider = MacroSection:AddSlider({
 MacroSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
 
 MacroSection:AddKeybind({
-    Name = "Spam Keybind",
+    Name = "Keybind",
     Default = Config.Keybind,
     Callback = function(key) Config.Keybind = key saveConfig() end,
 })
 
 -- ========== TRIGGERBOT TAB ==========
-local TBSection = TBTab:AddSection({ Name = "Triggerbot (EAGLE)" })
+local TBSection = TBTab:AddSection({ Name = "Triggerbot" })
 
+-- NOTE: TBToggle is forward-declared near the triggerbot loop, so this assigns to it.
 TBToggle = TBSection:AddToggle({
     Name = "Active",
     Default = Config.TriggerBot,
@@ -3357,10 +3379,8 @@ SetSection:AddButton({
         loadConfig()
         updateDivisor()
         pcall(function() SpamToggle:SetValue(Config.Spamming) end)
-        pcall(function() AutoParryToggle:SetValue(Config.AutoParry) end)
         pcall(function() SafeToggle:SetValue(Config.SafeMode) end)
         pcall(function() MacroAnimFix:SetValue(Config.MacroAnimationFix) end)
-        pcall(function() AutoParryAnimFix:SetValue(Config.AutoParryAnimationFix) end)
         pcall(function() CpsSlider:SetValue(Config.TargetCPS) end)
         CpsLabel:SetValue("CPS: " .. tostring(Config.TargetCPS))
         pcall(function() TBToggle:SetValue(Config.TriggerBot) end)
@@ -3447,5 +3467,5 @@ end)
 if Config.Spamming then PlayParryAnimation() end
 
 NZNotification.new("INFINITE TSUKUYOMI", "Loaded. Parry once to hook. " ..
-    Config.Keybind.Name .. " = Spam, hold " .. Config.TriggerBotKeybind.Name .. " = Triggerbot (HOLD)", 6)
+    Config.Keybind.Name .. " = Tsukuyomi, hold " .. Config.TriggerBotKeybind.Name .. " = Triggerbot (HOLD)", 6)
 print("[INFINITE TSUKUYOMI] loaded")
