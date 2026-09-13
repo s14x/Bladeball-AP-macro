@@ -907,11 +907,11 @@ local SWORD_LIST = {
     "Monarch Blade", "Dual Monarch Blade", "Monarch Shield", "Dual Monarch Set",
     "Coffin", "Rosefire Blade", "Dual Rosefire Blade", "Rosefire Scythe",
     "Dual Rosefire Scythe", "Moonflower Katana", "Moonflower Greatsword",
-    "Placeholder", "Penguin", "Polar Bear", "Serpent", "Aurelius",
-    "Winter Wolf", "Apex Blade", "Champion Scythe", "Vishram", "Crescendo",
-    "Cyber Thorn", "Essence Cleaver", "Molten Greatblade", "Shattered Sword",
+    "Placeholder", "Penguin", "Polar Bear", "Serpent", "Serpent's Katana", 
+    "Aurelius", "Winter Wolf", "Apex Blade", "Avalanche Blade", "Champion Scythe", "Vishram",
+    "Crescendo", "Cyber Thorn", "Essence Cleaver", "Molten Greatblade", "Shattered Sword",
     "Anime Sword", "Bowtie Blade", "Party Popper", "Festive Eclipse Blade",
-    "Inferno Emberblade", "Witch's Curse", "Spooky Sightblade",
+    "Inferno Emberblade", "Witch's Curse", "Spooky Sightblade", "Enchanted Backblade",
     "Pumpkin VineCrusher", "Morbid Mireblade", "Haunted Harvester",
     "Play Sword", "Eternal Piercer", "Demonblade", "Witch's Broomstick",
     "Bloodgazer's Edge", "Dreadbone Greataxe", "Hellfire Shadowslicer",
@@ -923,7 +923,7 @@ local SWORD_LIST = {
     "Serpent's Shiv", "Runic Wrecker", "VIP Sword", "VIP Cutlass",
     "Gladiator Sword", "Siam Ember Axe", "Siamese Edgeblade", "Gobble Blade",
     "Glacier Shard", "Arctic Edge", "Dual Frost Saber", "Glacial Scythe",
-    "Ice Dagger", "Frozen Doomblade", "Plasma Blaster", "Laser Twinblade",
+    "Ice Dagger", "Frozen Doomblade", "Frostbite Edge", "Plasma Blaster", "Laser Twinblade",
     "Dual Plasma Blasters", "Serpent's Lance", "Serpent's Fang",
     "Frostbite Blade", "Royal Sword", "Evolved Royal Sword", "Royal Sovereign",
     "Imperial Monarch", "Royal Sharpened Sword", "Reckoner Scythe",
@@ -1290,7 +1290,8 @@ local SWORD_LIST = {
     "Ranked Season 16 Top 1", "Ranked Season 16 Top 50", "Ranked Season 16 Top 200",
     "Ranked Season 17 Top 1", "Ranked Season 17 Top 50", "Ranked Season 17 Top 200",
     "Dual Strawberry Cake Blade", "Glacial Seraph Staff", "Riftspike Reaper",
-    "Cryoscourge", "Hidden Beast Blade", "Radiant Duckling Lance",
+    "Cryoscourge", "Hidden Beast Blade", "Radiant Duckling Lance", "Bloomlight Greatscythe",
+
 }
 
 -- Build lookup + sorted tables (auto-deduped, case-insensitive)
@@ -1312,13 +1313,13 @@ table.sort(SORTED_SWORDS, function(a, b) return #a < #b end)
 -- ============================================================
 local TAG_COLORS = {
     ["Limited"]             = "#c026c0",
-    ["Unique"]              = "#ffd700",
+    ["Unique"]              = "#ff3030",
     ["Top Spender"]         = "#ff5555",
     ["Clan War"]            = "#4ecdc4",
     ["Monthly Leaderboard"] = "#45b7d1",
     ["LTM Leaderboard"]     = "#96ceb4",
     ["Exclusive Merch"]     = "#dda0dd",
-    ["Dev Sword"]           = "#ff8c00",
+    ["Dev Sword"]           = "#00ff00",
 }
 
 local SWORD_TAGS = {
@@ -1341,7 +1342,7 @@ local SWORD_TAGS = {
     ["Diamond Starblade"] = "Top Spender", ["Witchfire Blade"] = "Top Spender",
     ["Amethyst Greatsword"] = "Top Spender", ["Soulreaper Scythe"] = "Top Spender",
     ["Chroma Fortune Cleaver"] = "Top Spender", ["Crypt Keeper"] = "Top Spender",
-    ["Turkey Slayer"] = "Top Spender",
+    ["Turkey Slayer"] = "Top Spender", ["Bloomlight Greatscythe"] = "Top Spender",
 
     -- CLAN WAR
     ["Sci Fi Axe"] = "Clan War", ["Sci Fi Blade"] = "Clan War",
@@ -2070,7 +2071,9 @@ local SWORD_TAGS = {
     ["Placeholder"] = "Unique",
     ["Riftspike Reaper"] = "Unique", ["Cryoscourge"] = "Unique",
     ["Neon Tempest"] = "Unique", ["Glacial Seraph Staff"] = "Unique",
-    ["Dual Strawberry Cake Blade"] = "Unique",
+    ["Dual Strawberry Cake Blade"] = "Unique", ["Serpent's Katana"] = "Unique",
+    ["Frostbite Edge"] = "Unique", ["Avalanche Blade"] = "Unique",
+    ["Enchanted Backblade"] = "Unique",
 }
 
 -- ============================================================
