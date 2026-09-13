@@ -816,36 +816,21 @@ if LocalPlayer.Character then task.spawn(setupCharacterVisuals, LocalPlayer.Char
 LocalPlayer.CharacterAdded:Connect(setupCharacterVisuals)
 
 -- ============================================================
--- COMPREHENSIVE SWORD LIST (deduplicated)
+-- SWORD LIST
 -- ============================================================
 local SWORD_LIST = {
-    -- ============================================================
-    -- COMMON
-    -- ============================================================
     "Base Sword", "Dark Blade", "Pickaxe", "Massive Lollipop", "Melon Slice",
     "Wooden Hammer", "Tanto", "Bone", "Rapier", "Stick", "Baseball Bat",
     "Battle Axe", "Kitchen Knife", "Linked Sword", "Emerald Warden Blade",
-
-    -- ============================================================
-    -- RARE
-    -- ============================================================
     "Etherium Dagger", "Vengeful Dagger", "Executive Greatsword",
     "Dragonslayer Blade", "Spearbeard", "Spark Sword", "Blocky Sword",
     "Red Saber", "Rockxcalibur", "Rifle", "Glowy Bone", "Frying Pan",
     "Comically Large Spoon", "Bonsai Tree", "Plunger", "DJ's Sword of Agility",
     "Sabrina's Sword of Healing", "Russo's Sword of Truth",
-
-    -- ============================================================
-    -- LEGENDARY
-    -- ============================================================
     "Excalibur", "Holy Sword", "Trident", "Holy Axe", "Solarus", "Cyber Blade",
     "Aurorum", "Musara", "Thunderous Hammer", "Zoru", "Ghostwalker",
     "Venomshank", "Darkheart", "Soul Scythe", "Windforce", "Illumina",
     "Firebrand", "Solans", "Void Sword", "Dune Cleaver",
-
-    -- ============================================================
-    -- LIMITED
-    -- ============================================================
     "Empyrean Greatblade", "Oni Claws", "Cyber Scythe", "Wavelight Greatblade",
     "Prince Blade", "Hallow's Edge", "Nebula Scythe", "Dual Nebula Scythe",
     "Ether Blade", "Dual Ether Blade", "Vanguard Shield", "Empyrean Fortress",
@@ -1266,54 +1251,9 @@ local SWORD_LIST = {
     "Naturic Cutlass", "Hotdog Sword", "Remnant Sword",
     "Pumpkin PieBlade", "1B Sword", "Ball on a Stick",
     "Comically Large Flashlight", "Equinox Ball Kebab", "Bubble Wand",
-    "Midas Thorn", "Rose Backsword", "Rose Greatsword", "Red Moon Katana",
-    "Stratocaster Electric Guitar", "Ultimate Ruby", "BAH", "Hallow's Wrath",
-    "Dual Dragonfire Katana",
-
-    -- ============================================================
-    -- RANKED REWARD SWORDS (Seasonal)
-    -- ============================================================
-    -- Season 1
-    "Ranked Season 1 Top 1", "Ranked Season 1 Top 50", "Ranked Season 1 Top 200",
-    -- Season 2 (Azure Thunderbolt already listed above)
-    "Ranked Season 2 Top 1", "Ranked Season 2 Top 50", "Ranked Season 2 Top 200",
-    -- Season 3
-    "Ranked Season 3 Top 1", "Ranked Season 3 Top 50", "Ranked Season 3 Top 200",
-    -- Season 4
-    "Ranked Season 4 Top 1", "Ranked Season 4 Top 50", "Ranked Season 4 Top 100",
-    "Ranked Season 4 Top 200",
-    -- Season 5
-    "Ranked Season 5 Top 1", "Ranked Season 5 Top 50", "Ranked Season 5 Top 200",
-    -- Season 6
-    "Ranked Season 6 Top 1", "Ranked Season 6 Top 50", "Ranked Season 6 Top 200",
-    -- Season 7
-    "Ranked Season 7 Top 1", "Ranked Season 7 Top 50", "Ranked Season 7 Top 200",
-    -- Season 8
-    "Ranked Season 8 Top 1", "Ranked Season 8 Top 50", "Ranked Season 8 Top 200",
-    -- Season 9
-    "Ranked Season 9 Top 1", "Ranked Season 9 Top 50", "Ranked Season 9 Top 200",
-    "Ranked Season 9 Champion",
-    -- Season 10
-    "Ranked Season 10 Top 1", "Ranked Season 10 Top 50", "Ranked Season 10 Top 200",
-    -- Season 11
-    "Ranked Season 11 Top 1", "Ranked Season 11 Top 50", "Ranked Season 11 Top 200",
-    "Ranked Season 11 Champion",
-    -- Season 12
-    "Ranked Season 12 Top 1", "Ranked Season 12 Top 50", "Ranked Season 12 Top 200",
-    -- Season 13
-    "Ranked Season 13 Top 1", "Ranked Season 13 Top 50", "Ranked Season 13 Top 200",
-    -- Season 14
-    "Ranked Season 14 Top 1", "Ranked Season 14 Top 50", "Ranked Season 14 Top 200",
-    -- Season 15
-    "Ranked Season 15 Top 1", "Ranked Season 15 Top 50", "Ranked Season 15 Top 200",
-    -- Season 16
-    "Ranked Season 16 Top 1", "Ranked Season 16 Top 50", "Ranked Season 16 Top 200",
-    -- Season 17
-    "Ranked Season 17 Top 1", "Ranked Season 17 Top 50", "Ranked Season 17 Top 200",
-
-    -- ============================================================
-    -- EXTRA UNIQUE SWORDS (no duplicates)
-    -- ============================================================
+    "Midas Thorn", "Rose Backsword", "Rose Greatsword",
+    "Red Moon Katana", "Stratocaster Electric Guitar", "Ultimate Ruby", "BAH",
+    "Hallow's Wrath", "Dual Dragonfire Katana",
     "Cursed Relic Greatblade", "Nightmare Reaver", "Blizzard Kingscythe",
     "Allseeing Seer", "Crypt Keeper", "Turkey Slayer",
     "Resolution Rumble Champion", "Aurora Warrior", "Eclipse Backsword",
@@ -1328,7 +1268,809 @@ local SWORD_LIST = {
     "True Triple Katana", "Cursed Dual Katana", "Triple Dark Blade",
     "Dragon Heart", "Buddy Sword", "Gravity Blade", "Shark Anchor",
     "Midnight Blade", "Spikey Trident", "Rengoku", "Yama", "Pole (2nd Form)",
-    "Flail", "Koko", "Tushita", "Dark Dagger", "Hallows Edge"
+    "Flail", "Koko", "Tushita", "Dark Dagger", "Hallows Edge",
+    "Ranked Season 1 Top 1", "Ranked Season 1 Top 50", "Ranked Season 1 Top 200",
+    "Ranked Season 2 Top 1", "Ranked Season 2 Top 50", "Ranked Season 2 Top 200",
+    "Ranked Season 3 Top 1", "Ranked Season 3 Top 50", "Ranked Season 3 Top 200",
+    "Ranked Season 4 Top 1", "Ranked Season 4 Top 50", "Ranked Season 4 Top 100",
+    "Ranked Season 4 Top 200",
+    "Ranked Season 5 Top 1", "Ranked Season 5 Top 50", "Ranked Season 5 Top 200",
+    "Ranked Season 6 Top 1", "Ranked Season 6 Top 50", "Ranked Season 6 Top 200",
+    "Ranked Season 7 Top 1", "Ranked Season 7 Top 50", "Ranked Season 7 Top 200",
+    "Ranked Season 8 Top 1", "Ranked Season 8 Top 50", "Ranked Season 8 Top 200",
+    "Ranked Season 9 Top 1", "Ranked Season 9 Top 50", "Ranked Season 9 Top 200",
+    "Ranked Season 9 Champion",
+    "Ranked Season 10 Top 1", "Ranked Season 10 Top 50", "Ranked Season 10 Top 200",
+    "Ranked Season 11 Top 1", "Ranked Season 11 Top 50", "Ranked Season 11 Top 200",
+    "Ranked Season 11 Champion",
+    "Ranked Season 12 Top 1", "Ranked Season 12 Top 50", "Ranked Season 12 Top 200",
+    "Ranked Season 13 Top 1", "Ranked Season 13 Top 50", "Ranked Season 13 Top 200",
+    "Ranked Season 14 Top 1", "Ranked Season 14 Top 50", "Ranked Season 14 Top 200",
+    "Ranked Season 15 Top 1", "Ranked Season 15 Top 50", "Ranked Season 15 Top 200",
+    "Ranked Season 16 Top 1", "Ranked Season 16 Top 50", "Ranked Season 16 Top 200",
+    "Ranked Season 17 Top 1", "Ranked Season 17 Top 50", "Ranked Season 17 Top 200",
+    "Dual Strawberry Cake Blade", "Glacial Seraph Staff", "Riftspike Reaper",
+    "Cryoscourge", "Hidden Beast Blade", "Radiant Duckling Lance",
+}
+
+-- Build lookup + sorted tables (auto-deduped, case-insensitive)
+local SWORD_LOOKUP = {}
+local SORTED_SWORDS = {}
+local _seen = {}
+for _, name in ipairs(SWORD_LIST) do
+    local key = name:lower()
+    if not _seen[key] then
+        _seen[key] = true
+        SWORD_LOOKUP[key] = name
+        table.insert(SORTED_SWORDS, name)
+    end
+end
+table.sort(SORTED_SWORDS, function(a, b) return #a < #b end)
+
+-- ============================================================
+-- SWORD TAGS & COLORS
+-- ============================================================
+local TAG_COLORS = {
+    ["Limited"]             = "#c026c0",
+    ["Unique"]              = "#ffd700",
+    ["Top Spender"]         = "#ff5555",
+    ["Clan War"]            = "#4ecdc4",
+    ["Monthly Leaderboard"] = "#45b7d1",
+    ["LTM Leaderboard"]     = "#96ceb4",
+    ["Exclusive Merch"]     = "#dda0dd",
+    ["Dev Sword"]           = "#ff8c00",
+}
+
+local SWORD_TAGS = {
+    -- DEV SWORDS
+    ["Pillar"] = "Dev Sword", ["Small Sapling"] = "Dev Sword",
+    ["Kelven"] = "Dev Sword", ["Failsafe"] = "Dev Sword",
+    ["Skib"] = "Dev Sword", ["InceptionTime's Hammer"] = "Dev Sword",
+    ["Nothing at All"] = "Dev Sword", ["Frog Devsword"] = "Dev Sword",
+    ["Dot Sword"] = "Dev Sword", ["Dot"] = "Dev Sword",
+    ["Aurelius"] = "Dev Sword", ["Titan Blade"] = "Dev Sword",
+
+    -- TOP SPENDER
+    ["Allseeing Seer"] = "Top Spender", ["Aethertech Blade"] = "Top Spender",
+    ["Voided Greatscythe"] = "Top Spender", ["Cursed Relic Greatblade"] = "Top Spender",
+    ["Blizzard Kingscythe"] = "Top Spender", ["Nightmare Reaver"] = "Top Spender",
+    ["Resolution Rumble Champion"] = "Top Spender", ["Aurora Warrior"] = "Top Spender",
+    ["Eclipse Backsword"] = "Top Spender", ["Sandstorm Slasher"] = "Top Spender",
+    ["Evil Runics Blade"] = "Top Spender", ["Icebound Dominus"] = "Top Spender",
+    ["Chroma Seal"] = "Top Spender", ["Poisoned Bunny"] = "Top Spender",
+    ["Diamond Starblade"] = "Top Spender", ["Witchfire Blade"] = "Top Spender",
+    ["Amethyst Greatsword"] = "Top Spender", ["Soulreaper Scythe"] = "Top Spender",
+    ["Chroma Fortune Cleaver"] = "Top Spender", ["Crypt Keeper"] = "Top Spender",
+    ["Turkey Slayer"] = "Top Spender",
+
+    -- CLAN WAR
+    ["Sci Fi Axe"] = "Clan War", ["Sci Fi Blade"] = "Clan War",
+    ["Galactic Veilpiercer"] = "Clan War", ["Flood Serpent"] = "Clan War",
+    ["Winter Sovereign Blade"] = "Clan War", ["Inferno Sword"] = "Clan War",
+    ["Ice King's Bow"] = "Clan War", ["Eternal Autumn"] = "Clan War",
+    ["Harvest Reaper"] = "Clan War",
+
+    -- MONTHLY LEADERBOARD
+    ["Chroma Shortaxe"] = "Monthly Leaderboard", ["Opal Staff"] = "Monthly Leaderboard",
+    ["Amethyst Dagger"] = "Monthly Leaderboard", ["Amethyst Blade"] = "Monthly Leaderboard",
+    ["Teal Longsword"] = "Monthly Leaderboard", ["Ice Mage Staff"] = "Monthly Leaderboard",
+    ["Bronze Staff"] = "Monthly Leaderboard", ["Null Riftblade"] = "Monthly Leaderboard",
+    ["Blossoming Edge"] = "Monthly Leaderboard", ["Entangled Axe"] = "Monthly Leaderboard",
+    ["Corrupted Kunais"] = "Monthly Leaderboard",
+
+    -- LTM LEADERBOARD
+    ["Cosmic Starblade"] = "LTM Leaderboard", ["Frostshard Blade"] = "LTM Leaderboard",
+    ["Dawnblade"] = "LTM Leaderboard", ["Inferno Greatscythe"] = "LTM Leaderboard",
+    ["Naturic Cutlass"] = "LTM Leaderboard", ["Hotdog Sword"] = "LTM Leaderboard",
+    ["Remnant Sword"] = "LTM Leaderboard", ["Pumpkin PieBlade"] = "LTM Leaderboard",
+    ["1B Sword"] = "LTM Leaderboard", ["Ball on a Stick"] = "LTM Leaderboard",
+    ["Comically Large Flashlight"] = "LTM Leaderboard", ["Equinox Ball Kebab"] = "LTM Leaderboard",
+    ["Bubble Wand"] = "LTM Leaderboard",
+
+    -- EXCLUSIVE MERCH
+    ["Midas Thorn"] = "Exclusive Merch", ["Rose Backsword"] = "Exclusive Merch",
+    ["Rose Greatsword"] = "Exclusive Merch", ["Serpent"] = "Exclusive Merch",
+    ["Red Moon Katana"] = "Limited", ["Ultimate Ruby"] = "Exclusive Merch",
+    ["BAH"] = "Exclusive Merch", ["Hallow's Wrath"] = "Exclusive Merch",
+    ["Dual Dragonfire Katana"] = "Exclusive Merch",
+    ["Stratocaster Electric Guitar"] = "Exclusive Merch",
+
+    -- LIMITED
+    ["Empyrean Greatblade"] = "Limited", ["Oni Claws"] = "Limited",
+    ["Cyber Scythe"] = "Limited", ["Wavelight Greatblade"] = "Limited",
+    ["Prince Blade"] = "Limited", ["Hallow's Edge"] = "Limited",
+    ["Nebula Scythe"] = "Limited", ["Dual Nebula Scythe"] = "Limited",
+    ["Ether Blade"] = "Limited", ["Dual Ether Blade"] = "Limited",
+    ["Vanguard Shield"] = "Limited", ["Empyrean Fortress"] = "Limited",
+    ["Nebula's Lightning"] = "Limited", ["Dual Nebula's Lightning"] = "Limited",
+    ["Yin Yang Katana"] = "Limited", ["Dual Yin Yang Katana"] = "Limited",
+    ["Yin Yang Scythe"] = "Limited", ["Dual Yin Yang Scythe"] = "Limited",
+    ["Blackhole Katana"] = "Limited", ["Dual Blackhole Katana"] = "Limited",
+    ["Blackhole Scythe"] = "Limited", ["Dual Blackhole Scythe"] = "Limited",
+    ["Sakura Katana"] = "Limited", ["Dual Sakura Katana"] = "Limited",
+    ["Sakura Scythe"] = "Limited", ["Dual Sakura Scythe"] = "Limited",
+    ["Singularity Katana"] = "Limited", ["Dual Singularity Katana"] = "Limited",
+    ["Singularity Scythe"] = "Limited", ["Dual Singularity Scythe"] = "Limited",
+    ["Nebula Yoru"] = "Limited", ["Dual Nebula Yoru"] = "Limited",
+    ["Dragon Slayer"] = "Limited", ["Dual Dragon Slayer"] = "Limited",
+    ["Wispwind Reaper"] = "Limited", ["Dual Wispwind Reaper"] = "Limited",
+    ["Kurogin Katana"] = "Limited", ["Dual Kurogin Katana"] = "Limited",
+    ["Kurogin Scythe"] = "Limited", ["Dual Kurogin Scythe"] = "Limited",
+    ["Raven Greatsword"] = "Limited", ["Dual Raven Greatsword"] = "Limited",
+    ["Raven Scythe"] = "Limited", ["Dual Raven Scythe"] = "Limited",
+    ["Nebula Claws"] = "Limited", ["Crimson Katana"] = "Limited",
+    ["Dual Crimson Katana"] = "Limited", ["Crimson Eclipse"] = "Limited",
+    ["Dual Crimson Eclipse"] = "Limited", ["Prismatic Katana"] = "Limited",
+    ["Dual Prismatic Katana"] = "Limited", ["Prismatic Harvester"] = "Limited",
+    ["Double Sided Prismatic"] = "Limited",
+    ["Aetherial Azure Katana"] = "Limited", ["Dual Aetherial Azure Katana"] = "Limited",
+    ["Aetherial Azure Reckoner"] = "Limited", ["Dual Aetherial Azure Reckoner"] = "Limited",
+    ["Nebula Blade"] = "Limited", ["Dual Nebula Blade"] = "Limited",
+    ["Crystal Greatblade"] = "Limited", ["Dual Crystal Greatblade"] = "Limited",
+    ["Crystal Reaperblade"] = "Limited", ["Dual Crystal Reaperblade"] = "Limited",
+    ["Voltfire Blade"] = "Limited", ["Dual Voltfire Blade"] = "Limited",
+    ["Voltfire Lash"] = "Limited", ["Dual Voltfire Lash"] = "Limited",
+    ["Nebula Katana"] = "Limited", ["Dual Nebula Katana"] = "Limited",
+    ["Nightfall Violin"] = "Limited", ["Lunar Parasol"] = "Limited",
+    ["Love Blade"] = "Limited", ["Dual Love Blade"] = "Limited",
+    ["Cupid's Bow"] = "Limited", ["Shadow Dagger"] = "Limited",
+    ["Dual Shadow Daggers"] = "Limited", ["Shadow Mirage"] = "Limited",
+    ["Dual Shadow Mirage"] = "Limited", ["Crystal Hammer"] = "Limited",
+    ["Dual Crystal Hammer"] = "Limited", ["Crystal Scissors"] = "Limited",
+    ["Void Blade"] = "Limited", ["Dual Void Blades"] = "Limited",
+    ["Void Scythe"] = "Limited", ["Dual Void Scythes"] = "Limited",
+    ["Stardust Katana"] = "Limited", ["Dual Stardust Katana"] = "Limited",
+    ["Stardust Bow"] = "Limited", ["Princess Katana"] = "Limited",
+    ["Dual Princess Katana"] = "Limited", ["King Blade"] = "Limited",
+    ["Queen Blade"] = "Limited", ["Dual Royal Blades"] = "Limited",
+    ["Stellar Blade"] = "Limited", ["Dual Stellar Blade"] = "Limited",
+    ["Stellar Revolver"] = "Limited", ["Dual Stellar Revolver"] = "Limited",
+    ["Nebula Blaster"] = "Limited", ["Dual Nebula Blasters"] = "Limited",
+    ["Blossom Blade"] = "Limited", ["Dual Blossom Blade"] = "Limited",
+    ["Blossom Scythe"] = "Limited", ["Dual Blossom Scythe"] = "Limited",
+    ["Demonic Blade"] = "Limited", ["Dual Demonic Blade"] = "Limited",
+    ["Demonic Scythe"] = "Limited", ["Dual Demonic Scythe"] = "Limited",
+    ["Frostblade"] = "Limited", ["Ocean's Lament"] = "Limited",
+    ["Noob"] = "Limited", ["Forsaken Riftide"] = "Limited",
+    ["Heavenly Sword"] = "Limited", ["Dual Heavenly Sword"] = "Limited",
+    ["Heavenly Chakram"] = "Limited", ["Angel Greatsword"] = "Limited",
+    ["Devil Greatsword"] = "Limited", ["Dual Eternal Greatsword"] = "Limited",
+    ["Desert Blade"] = "Limited", ["Dual Desert Blade"] = "Limited",
+    ["Desert Claws"] = "Limited", ["Astral Sword"] = "Limited",
+    ["Dual Astrals Sword"] = "Limited", ["Astral Bow"] = "Limited",
+    ["Serene Blade"] = "Limited", ["Dual Serene Blade"] = "Limited",
+    ["Serene Scythe"] = "Limited", ["Dual Serene Scythe"] = "Limited",
+    ["Lightning Dagger"] = "Limited", ["Dual Lightning Dagger"] = "Limited",
+    ["Lightning Sickle"] = "Limited", ["Dual Lightning Sickle"] = "Limited",
+    ["Frigid Blade"] = "Limited", ["Dual Frigid Blade"] = "Limited",
+    ["Frigid Scythe"] = "Limited", ["Dual Frigid Scythe"] = "Limited",
+    ["Runic Blade"] = "Limited", ["Dual Runic Blade"] = "Limited",
+    ["Runic Scythe"] = "Limited", ["Dual Runic Scythe"] = "Limited",
+    ["Chroma Blade"] = "Limited", ["Chroma Scythe"] = "Limited",
+    ["Dual Chroma Set"] = "Limited", ["Eclipse Gleam"] = "Limited",
+    ["Dual Eclipse Gleam"] = "Limited", ["Eclipse Blaster"] = "Limited",
+    ["Dual Eclipse Blasters"] = "Limited", ["Blade of the Fallen King"] = "Limited",
+    ["Kingsguard's Edge"] = "Limited", ["Abyssal Blade"] = "Limited",
+    ["Dual Abyssal Blade"] = "Limited", ["Abyssal Shield"] = "Limited",
+    ["Dual Abyssal Set"] = "Limited", ["Resurrection Blade"] = "Limited",
+    ["Dual Resurrection Blade"] = "Limited", ["Resurrection Scythe"] = "Limited",
+    ["Dual Resurrection Scythe"] = "Limited", ["Twilight Blade"] = "Limited",
+    ["Dual Twilight Blades"] = "Limited", ["Twilight Scythe"] = "Limited",
+    ["Dual Twilight Scythes"] = "Limited", ["Yin Yang Parasol"] = "Limited",
+    ["Yin Yang Greatsword"] = "Limited", ["Dual Yin Yang Greatsword"] = "Limited",
+    ["Aetherial Kunai"] = "Limited", ["Dual Aetherial Kunai"] = "Limited",
+    ["Aetherial Lance"] = "Limited", ["Rose Blade"] = "Limited",
+    ["Dual Rose Blade"] = "Limited", ["Rose Bow"] = "Limited",
+    ["Infinite Blade"] = "Limited", ["Dual Infinite Blade"] = "Limited",
+    ["Infinite Scythe"] = "Limited", ["Dual Infinite Scythe"] = "Limited",
+    ["Shark"] = "Limited", ["Sinister Blade"] = "Limited",
+    ["Dual Sinister Blade"] = "Limited", ["Sinister Blaster"] = "Limited",
+    ["Dual Sinister Blasters"] = "Limited", ["Black Ninja Katana"] = "Limited",
+    ["Blue Ninja Katana"] = "Limited", ["Red Ninja Katana"] = "Limited",
+    ["Green Ninja Katana"] = "Limited", ["Pink Ninja Katana"] = "Limited",
+    ["Chroma Ninja Katana"] = "Limited", ["Divine Sword"] = "Limited",
+    ["Dual Divine Sword"] = "Limited", ["Divine Blaster"] = "Limited",
+    ["Dual Divine Blaster"] = "Limited", ["Phantom Blade"] = "Limited",
+    ["Dual Phantom Blade"] = "Limited", ["Phantom Scythe"] = "Limited",
+    ["Dual Phantom Scythe"] = "Limited", ["Jellyfish Parasol"] = "Limited",
+    ["Nebula Sniper"] = "Limited", ["Arachne Blade"] = "Limited",
+    ["Dual Arachne Blade"] = "Limited", ["Arachne Scythe"] = "Limited",
+    ["Dual Arachne Scythe"] = "Limited", ["North Blade"] = "Limited",
+    ["Dual North Blade"] = "Limited", ["North Star"] = "Limited",
+    ["Butterfly Blade"] = "Limited", ["Dual Butterfly Blade"] = "Limited",
+    ["Butterfly Bow"] = "Limited", ["Sakura Fan"] = "Limited",
+    ["Dual Sakura Fan"] = "Limited", ["Sakura Parasol"] = "Limited",
+    ["Wonderwisp Greatsword"] = "Limited", ["Dual Wonderwisp Greatsword"] = "Limited",
+    ["Black Ninja Star"] = "Limited", ["Blue Ninja Star"] = "Limited",
+    ["Red Ninja Star"] = "Limited", ["Green Ninja Star"] = "Limited",
+    ["Pink Ninja Star"] = "Limited", ["Chroma Ninja Star"] = "Limited",
+    ["Obsidian Blade"] = "Limited", ["Dual Obsidian Blade"] = "Limited",
+    ["Obsidian Scythe"] = "Limited", ["Dual Obsidian Scythe"] = "Limited",
+    ["Vaporwave Blade"] = "Limited", ["Dual Vaporwave Blade"] = "Limited",
+    ["Vaporwave Crusher"] = "Limited", ["Dual Vaporwave Crusher"] = "Limited",
+    ["Hakai Blade"] = "Limited", ["Dual Hakai Blade"] = "Limited",
+    ["Hakai Scorpion"] = "Limited", ["Dual Hakai Set"] = "Limited",
+    ["Cursed Blade"] = "Limited", ["Dual Cursed Blade"] = "Limited",
+    ["Cursed Scythe"] = "Limited", ["Dual Cursed Scythe"] = "Limited",
+    ["Soulrender Scythe"] = "Limited", ["Kitty Launcher"] = "Limited",
+    ["Malice Blade"] = "Limited", ["Dual Malice Blade"] = "Limited",
+    ["Malice Parasol"] = "Limited", ["Seraphim"] = "Limited",
+    ["Starlight Axe"] = "Limited", ["Dual Starlight Axe"] = "Limited",
+    ["Starlight Scythe"] = "Limited", ["Dual Starlight Scythe"] = "Limited",
+    ["Vampire Saw"] = "Limited", ["Dual Vampire Saw"] = "Limited",
+    ["Vampire Sickle"] = "Limited", ["Dual Vampire Sickle"] = "Limited",
+    ["Monarch Blade"] = "Limited", ["Dual Monarch Blade"] = "Limited",
+    ["Monarch Shield"] = "Limited", ["Dual Monarch Set"] = "Limited",
+    ["Coffin"] = "Limited", ["Rosefire Blade"] = "Limited",
+    ["Dual Rosefire Blade"] = "Limited", ["Rosefire Scythe"] = "Limited",
+    ["Dual Rosefire Scythe"] = "Limited", ["Moonflower Katana"] = "Limited",
+    ["Moonflower Greatsword"] = "Limited", ["Placeholder"] = "Limited",
+    ["Penguin"] = "Limited", ["Polar Bear"] = "Limited",
+    ["Winter Wolf"] = "Limited", ["Apex Blade"] = "Limited",
+    ["Champion Scythe"] = "Limited", ["Vishram"] = "Limited",
+    ["Crescendo"] = "Limited", ["Cyber Thorn"] = "Limited",
+    ["Essence Cleaver"] = "Limited", ["Molten Greatblade"] = "Limited",
+    ["Shattered Sword"] = "Limited", ["Anime Sword"] = "Limited",
+    ["Bowtie Blade"] = "Limited", ["Party Popper"] = "Limited",
+    ["Festive Eclipse Blade"] = "Limited", ["Inferno Emberblade"] = "Limited",
+    ["Witch's Curse"] = "Limited", ["Spooky Sightblade"] = "Limited",
+    ["Pumpkin VineCrusher"] = "Limited", ["Morbid Mireblade"] = "Limited",
+    ["Haunted Harvester"] = "Limited", ["Play Sword"] = "Limited",
+    ["Eternal Piercer"] = "Limited", ["Demonblade"] = "Limited",
+    ["Witch's Broomstick"] = "Limited", ["Bloodgazer's Edge"] = "Limited",
+    ["Dreadbone Greataxe"] = "Limited", ["Hellfire Shadowslicer"] = "Limited",
+    ["Staff of The Accursed"] = "Limited", ["Wind Thorn"] = "Limited",
+    ["Eternum Galepiercer"] = "Limited", ["Ocean Blade"] = "Limited",
+    ["Tsunami Blade"] = "Limited", ["Thunder Blade"] = "Limited",
+    ["Voltage"] = "Limited", ["Elemental Masterblade"] = "Limited",
+    ["Dual Elemental Masterblade"] = "Limited", ["Plasma Gauntlets"] = "Limited",
+    ["Aurum Etherius"] = "Limited", ["Dual Aurum Etherius"] = "Limited",
+    ["Hellfire Blade Level 1"] = "Limited", ["Hellfire Blade Level 2"] = "Limited",
+    ["Hellfire Blade Level 3"] = "Limited", ["Serpent's Sickle"] = "Limited",
+    ["Serpent's Shiv"] = "Limited", ["Runic Wrecker"] = "Limited",
+    ["VIP Sword"] = "Limited", ["VIP Cutlass"] = "Limited",
+    ["Gladiator Sword"] = "Limited", ["Siam Ember Axe"] = "Limited",
+    ["Siamese Edgeblade"] = "Limited", ["Gobble Blade"] = "Limited",
+    ["Glacier Shard"] = "Limited", ["Arctic Edge"] = "Limited",
+    ["Dual Frost Saber"] = "Limited", ["Glacial Scythe"] = "Limited",
+    ["Ice Dagger"] = "Limited", ["Frozen Doomblade"] = "Limited",
+    ["Plasma Blaster"] = "Limited", ["Laser Twinblade"] = "Limited",
+    ["Dual Plasma Blasters"] = "Limited", ["Serpent's Lance"] = "Limited",
+    ["Serpent's Fang"] = "Limited", ["Frostbite Blade"] = "Limited",
+    ["Royal Sword"] = "Limited", ["Evolved Royal Sword"] = "Limited",
+    ["Royal Sovereign"] = "Limited", ["Imperial Monarch"] = "Limited",
+    ["Royal Sharpened Sword"] = "Limited", ["Reckoner Scythe"] = "Limited",
+    ["Undead Blade"] = "Limited", ["Soul Reaver"] = "Limited",
+    ["Reaper's Edge"] = "Limited", ["Inferno Blade"] = "Limited",
+    ["Cruz Dagger"] = "Limited", ["Sunset Katana"] = "Limited",
+    ["Sword of Order"] = "Limited", ["Progression Scythe"] = "Limited",
+    ["Nebula Fan"] = "Limited", ["Dual Nebula Fan"] = "Limited",
+    ["Candycane Katana"] = "Limited", ["Christmas Axe"] = "Limited",
+    ["Reindeer Hammer"] = "Limited", ["Christmas Blade"] = "Limited",
+    ["Winged Blade"] = "Limited", ["Boreal Frostreaver"] = "Limited",
+    ["Glacial Hunter"] = "Limited", ["Gingerbread Guardian"] = "Limited",
+    ["Yuletide Saber"] = "Limited", ["North Pole Enchanter"] = "Limited",
+    ["Blizzard Blade"] = "Limited", ["Evergreen Edge"] = "Limited",
+    ["Holiday Herald"] = "Limited", ["Santa's Slicer"] = "Limited",
+    ["Christmas Scythe"] = "Limited", ["Snowman Scythe"] = "Limited",
+    ["Candycane Crusher"] = "Limited", ["Festive Cutter"] = "Limited",
+    ["Holy Emberblade"] = "Limited", ["Evergreen Greatblade"] = "Limited",
+    ["Aether Katana"] = "Limited", ["Flowing Katana"] = "Limited",
+    ["New Years Blade"] = "Limited", ["Time Stopper"] = "Limited",
+    ["Firework Spear"] = "Limited", ["Axe Of Time"] = "Limited",
+    ["Fire Katana"] = "Limited", ["Dual Fire Katana"] = "Limited",
+    ["Gilded Glory"] = "Limited", ["Festive Sword"] = "Limited",
+    ["Parasol"] = "Limited", ["Dragon Sword"] = "Limited",
+    ["Evolved Dragon Sword"] = "Limited", ["Draconis Emerald"] = "Limited",
+    ["Dragon Katana"] = "Limited", ["Zombie Leg"] = "Limited",
+    ["Viral Edge"] = "Limited", ["Skeletal Slicer"] = "Limited",
+    ["Biohazard Sword"] = "Limited", ["Plague Slayer"] = "Limited",
+    ["Banana Sword"] = "Limited", ["Golden Gauntlets"] = "Limited",
+    ["Nebula Bow"] = "Limited", ["Blaze Blade"] = "Limited",
+    ["Sunfire Sword"] = "Limited", ["Inferno Axe"] = "Limited",
+    ["Fantasy Katana"] = "Limited", ["New Year's Katana"] = "Limited",
+    ["Firework Blaster"] = "Limited", ["Dual Firework Blasters"] = "Limited",
+    ["New Year's Axe"] = "Limited", ["New Year's Slasher"] = "Limited",
+    ["New Year's Spear"] = "Limited", ["Elemental Sword"] = "Limited",
+    ["Grass Blade"] = "Limited", ["Water Blade"] = "Limited",
+    ["Fire Blade"] = "Limited", ["Electric Blade"] = "Limited",
+    ["Phoenix Blade"] = "Limited", ["Phoenix Scythe"] = "Limited",
+    ["Hammer of Light"] = "Limited", ["Crown Scythe"] = "Limited",
+    ["Lunar Fan"] = "Limited", ["Dual Lunar Fan"] = "Limited",
+    ["Spring Blade"] = "Limited", ["Fortune Blade"] = "Limited",
+    ["Harmony Blade"] = "Limited", ["Wealth Cutter"] = "Limited",
+    ["Celebration Sword"] = "Limited", ["Lantern Rapier"] = "Limited",
+    ["Festive Valor Sword"] = "Limited", ["Scion's Grasp"] = "Limited",
+    ["Dragon's Triumph"] = "Limited", ["Dragon's Lunar Requiem"] = "Limited",
+    ["Emperor's Lance"] = "Limited", ["Dual Emperor's Lance"] = "Limited",
+    ["Lunar New Year Fury"] = "Limited", ["Fortune Seeker"] = "Limited",
+    ["Rose Wand"] = "Limited", ["Winged Sword"] = "Limited",
+    ["Axe of Love"] = "Limited", ["Flower Sword"] = "Limited",
+    ["Guardian of Love"] = "Limited", ["Heart Wand"] = "Limited",
+    ["Katana of Hearts"] = "Limited", ["Emerald Edge"] = "Limited",
+    ["Spirit Blade"] = "Limited", ["Dragonfire Katana"] = "Limited",
+    ["Lava Lamp Staff"] = "Limited", ["Magma Blade"] = "Limited",
+    ["Lava Blade"] = "Limited", ["Molten Slayer"] = "Limited",
+    ["Volcanic Axe"] = "Limited", ["Easter Fan"] = "Limited",
+    ["Dual Easter Fans"] = "Limited", ["Easter Scythe"] = "Limited",
+    ["Bunny Staff"] = "Limited", ["Dawn Petal"] = "Limited",
+    ["Springtide Edge"] = "Limited", ["Spring Bloom"] = "Limited",
+    ["Egg's Blossom"] = "Limited", ["Spring's Guardian"] = "Limited",
+    ["Hare's Honor"] = "Limited", ["Hatchling's Honor"] = "Limited",
+    ["Bunny's Edge"] = "Limited", ["Hare's Halberd"] = "Limited",
+    ["Tulip's Tempest"] = "Limited", ["Morning Dew"] = "Limited",
+    ["Lily's Light"] = "Limited", ["Bunny"] = "Limited",
+    ["Serpent's Slicer"] = "Limited", ["Tidal Blade"] = "Limited",
+    ["Frostbite Fang"] = "Limited", ["Inferno's Edge"] = "Limited",
+    ["Moonlight Bliss"] = "Limited", ["Light's Edge"] = "Limited",
+    ["Victory Blade"] = "Limited", ["Storm's Domain"] = "Limited",
+    ["Eclipse Blade"] = "Limited", ["Storm Bringer"] = "Limited",
+    ["Soul Sword"] = "Limited", ["Hope's Blade"] = "Limited",
+    ["Dawnbringer"] = "Limited", ["Serenity Blade"] = "Limited",
+    ["Servant's Dagger"] = "Limited", ["Soul Blade"] = "Limited",
+    ["Wraith's Edge"] = "Limited", ["Chaos Sword"] = "Limited",
+    ["Khage's Blade"] = "Limited", ["Unstable Blade"] = "Limited",
+    ["Lightwalker"] = "Limited", ["Shadow Fang"] = "Limited",
+    ["Paladin's Sword"] = "Limited", ["The Abyss"] = "Limited",
+    ["Holy Trident"] = "Limited", ["Angelic Blaster"] = "Limited",
+    ["Dual Eternal Blasters"] = "Limited", ["Lost Sword"] = "Limited",
+    ["Holy Lance"] = "Limited", ["Corrupted Halberd"] = "Limited",
+    ["Blade of Sorrows"] = "Limited", ["Axe of Balance"] = "Limited",
+    ["Hooded Blade"] = "Limited", ["Reaper's Scythe"] = "Limited",
+    ["Frog Sword"] = "Limited", ["Frog Blaster"] = "Limited",
+    ["Dual Frog Blasters"] = "Limited", ["Frog"] = "Limited",
+    ["Astral Blade"] = "Limited", ["Luminous Edge"] = "Limited",
+    ["Chrono's Descent"] = "Limited", ["Liberty Blade"] = "Limited",
+    ["Void Greatsword"] = "Limited", ["Scaled Longsword"] = "Limited",
+    ["Tundra's Tooth"] = "Limited", ["Galactic Halberd"] = "Limited",
+    ["Voidheart Piercer"] = "Limited", ["Griffin's Claw"] = "Limited",
+    ["Cerberus"] = "Limited", ["Serpent's Wraithblade"] = "Limited",
+    ["Fallen Sword"] = "Limited", ["Ancient Dagger"] = "Limited",
+    ["Vanguard's Blade"] = "Limited", ["Wolf Gladius"] = "Limited",
+    ["Seraph's Blade"] = "Limited", ["Dragon's Spine"] = "Limited",
+    ["Overgrown Scythe"] = "Limited", ["Neon Cutter"] = "Limited",
+    ["Encrypted Dagger"] = "Limited", ["Quantum Katana"] = "Limited",
+    ["The Lost Blade"] = "Limited", ["Blade of Vigilance"] = "Limited",
+    ["Neural Error"] = "Limited", ["Dimensional Edge"] = "Limited",
+    ["Exo Blade"] = "Limited", ["Persistence Blade"] = "Limited",
+    ["Wind Slicer"] = "Limited", ["Skyfall's Edge"] = "Limited",
+    ["Shadow Saber"] = "Limited", ["Frigidus' Starforge"] = "Limited",
+    ["Hyper Starforge"] = "Limited", ["Inferno's Starforge"] = "Limited",
+    ["Rekindled Gladius"] = "Limited", ["Blade of Exile"] = "Limited",
+    ["The Pendulum"] = "Limited", ["The Covenant"] = "Limited",
+    ["Lament's Blade"] = "Limited", ["Whispering Katana"] = "Limited",
+    ["Evil Slicer"] = "Limited", ["Devil Katana"] = "Limited",
+    ["Dual Devil Katana"] = "Limited", ["Triple Devil Katana"] = "Limited",
+    ["Truthseeker"] = "Limited", ["Dreadblade"] = "Limited",
+    ["Good Fan"] = "Limited", ["Dual Good Fans"] = "Limited",
+    ["Dual Evil Fans"] = "Limited", ["Nature's Fang"] = "Limited",
+    ["Briar Blade"] = "Limited", ["Frostwraith"] = "Limited",
+    ["Blade of Eras"] = "Limited", ["Blessed Blade"] = "Limited",
+    ["Fireforge Dagger"] = "Limited", ["Dune's Edge"] = "Limited",
+    ["Reaver Blade"] = "Limited", ["Elven's Moonblade"] = "Limited",
+    ["Doryu's Blade"] = "Limited", ["Cerberus' Fang"] = "Limited",
+    ["Fairy's Edge"] = "Limited", ["Bloodthirster"] = "Limited",
+    ["Lycan's Claw"] = "Limited", ["Overseer's Gaze"] = "Limited",
+    ["Aether's Dagger"] = "Limited", ["Sunfire's Flare"] = "Limited",
+    ["Dragonborne"] = "Limited", ["Chimera's Bane"] = "Limited",
+    ["Nightblade"] = "Limited", ["Crimson Sorrow"] = "Limited",
+    ["Dragonheart Greatsword"] = "Limited", ["Phoenix Saber"] = "Limited",
+    ["Mythical Remnant"] = "Limited", ["Staff of the Worthy"] = "Limited",
+    ["Frosted Gleam"] = "Limited", ["Dual Frosted Gleam"] = "Limited",
+    ["Remastered Linked Sword"] = "Limited", ["Light of the Illumina"] = "Limited",
+    ["The Lost Venomshank"] = "Limited", ["Ghostwalker's Vengeance"] = "Limited",
+    ["The Ice Dagger"] = "Limited", ["Darkheart's Fury"] = "Limited",
+    ["Redcliff Claymore"] = "Limited", ["Gothic Squire's Sword"] = "Limited",
+    ["Wind's Breath"] = "Limited", ["Firebrand's Fury"] = "Limited",
+    ["Green Energy Sword"] = "Limited", ["Dual Green Energy Sword"] = "Limited",
+    ["Dual Chroma Energy Sword"] = "Limited", ["Horseman's Sword"] = "Limited",
+    ["Wanderer's Dagger"] = "Limited", ["Enforcer's Spear"] = "Limited",
+    ["Paladin's Edge"] = "Limited", ["King's Valor"] = "Limited",
+    ["Oathblade"] = "Limited", ["Royal Duality"] = "Limited",
+    ["Squire's Oath"] = "Limited", ["Viscount's Blade"] = "Limited",
+    ["Celestial Lance"] = "Limited", ["Arcane's Edge"] = "Limited",
+    ["Poison Greatsword"] = "Limited", ["Greatsword of the Depths"] = "Limited",
+    ["Blue Royal Greatsword"] = "Limited", ["Traitor's Blade"] = "Limited",
+    ["Scale Blade"] = "Limited", ["Abyssal Fang"] = "Limited",
+    ["Ember's Rage"] = "Limited", ["Blazing Edge"] = "Limited",
+    ["Fire Blaster"] = "Limited", ["Dual Fire Blasters"] = "Limited",
+    ["Fire Dragon"] = "Limited", ["Glacier Blade"] = "Limited",
+    ["Frost Blaster"] = "Limited", ["Dual Frost Blasters"] = "Limited",
+    ["Frost Dragon"] = "Limited", ["Nebula Shard"] = "Limited",
+    ["Nebula Staff"] = "Limited", ["Dual Nebula Staff"] = "Limited",
+    ["Hope's Dagger"] = "Limited", ["Edge of Resurgence"] = "Limited",
+    ["Reclaimer's Blade"] = "Limited", ["Eternal Edge"] = "Limited",
+    ["Blade of Order"] = "Limited", ["Gaia's Edge"] = "Limited",
+    ["Stonecarver"] = "Limited", ["Shadow's Maw"] = "Limited",
+    ["Chaos Dagger"] = "Limited", ["Sylvan Blade"] = "Limited",
+    ["Wildheart"] = "Limited", ["Chroma Fragment"] = "Limited",
+    ["Chroma Sword"] = "Limited", ["Chroma Blaster"] = "Limited",
+    ["Dual Chroma Blasters"] = "Limited", ["Summer Scythe"] = "Limited",
+    ["Dual Summer Scythe"] = "Limited", ["Sand Dagger"] = "Limited",
+    ["Sunflare Blade"] = "Limited", ["Coral Blade"] = "Limited",
+    ["Tidebringer"] = "Limited", ["Island Cutter"] = "Limited",
+    ["Sundrop's Edge"] = "Limited", ["Dune Slicer"] = "Limited",
+    ["Aquamarine's Revenge"] = "Limited", ["Midsummer Blade"] = "Limited",
+    ["Everflame Scythe"] = "Limited", ["Dual Luminara"] = "Limited",
+    ["Cascade Blade"] = "Limited", ["Mirage's Edge"] = "Limited",
+    ["Solstice Blade"] = "Limited", ["Eldermarine Blade"] = "Limited",
+    ["Sandstorm's Edge"] = "Limited", ["Sunlit Saber"] = "Limited",
+    ["Breeze Blade"] = "Limited", ["Coral Cleaver"] = "Limited",
+    ["Tidal Slasher"] = "Limited", ["Buccaneer's Cutlass"] = "Limited",
+    ["Siren's Whisper"] = "Limited", ["Pearl Trident"] = "Limited",
+    ["Abyssal Wave"] = "Limited", ["Sailor's Saber"] = "Limited",
+    ["Leviathan's Fang"] = "Limited", ["Pirate King's Cutlass"] = "Limited",
+    ["Scourge of the Seas"] = "Limited", ["Barnacle Blade"] = "Limited",
+    ["Pearl Shard"] = "Limited", ["Cosmic Wrath"] = "Limited",
+    ["Eternal Waveblade"] = "Limited", ["Kelp Cutter"] = "Limited",
+    ["Tidal Cutlass"] = "Limited", ["Aqua Slicer"] = "Limited",
+    ["Maelstrom Blade"] = "Limited", ["Starfish Saber"] = "Limited",
+    ["Sundown Blade"] = "Limited", ["DriftWood Dagger"] = "Limited",
+    ["Volcanic Surge"] = "Limited", ["Crab's Cutlass"] = "Limited",
+    ["Shell Splitter"] = "Limited", ["Seashell Scimitar"] = "Limited",
+    ["Tropical Thunder"] = "Limited", ["Pirate's Slasher"] = "Limited",
+    ["Ghostly Vengeance"] = "Limited", ["Captain's Rapier"] = "Limited",
+    ["Swashbuckler's Blade"] = "Limited", ["Privateer's Edge"] = "Limited",
+    ["Sea Rover's Saber"] = "Limited", ["Mariner's Scimitar"] = "Limited",
+    ["Darkened Blade"] = "Limited", ["Corsair's Cleaver"] = "Limited",
+    ["Ghost Ship Blade"] = "Limited", ["Vortex Cutlass"] = "Limited",
+    ["Kraken's Shard"] = "Limited", ["Summer Fan"] = "Limited",
+    ["Dual Summer Fans"] = "Limited", ["Palm Leaf Blade"] = "Limited",
+    ["Tropical Cleaver"] = "Limited", ["Beachcomber's Blade"] = "Limited",
+    ["Lagoon Blade"] = "Limited", ["Coconut Crusher"] = "Limited",
+    ["Soulless Katana"] = "Limited", ["Dual Soulless Katana"] = "Limited",
+    ["Oceanic Reaper"] = "Limited", ["Reef Cutter"] = "Limited",
+    ["Hammerhead Slicer"] = "Limited", ["Tiger Shark"] = "Limited",
+    ["Great White Fury"] = "Limited", ["Shark Sword"] = "Limited",
+    ["Cyber Sickle"] = "Limited", ["Dual Cyber Sickle"] = "Limited",
+    ["Sunny Dagger"] = "Limited", ["Hibiscus Blade"] = "Limited",
+    ["Lemonade Slicer"] = "Limited", ["Summer Shard"] = "Limited",
+    ["Withered Tentacle"] = "Limited", ["Depth's Grasp"] = "Limited",
+    ["Kraken's Dominion"] = "Limited", ["Blazing Thorn"] = "Limited",
+    ["Bronze Blade"] = "Limited", ["Wooden Club"] = "Limited",
+    ["Sparkling Dagger"] = "Limited", ["Flame Sword"] = "Limited",
+    ["Glowing Axe"] = "Limited", ["Frost Hammer"] = "Limited",
+    ["Thunder Spear"] = "Limited", ["Arcane Staff"] = "Limited",
+    ["Gleaming Blade"] = "Limited", ["Aurora Edge"] = "Limited",
+    ["Crimson's Cat Racket"] = "Limited", ["Plasma Spear"] = "Limited",
+    ["Digital Saber"] = "Limited", ["Cyber Edge"] = "Limited",
+    ["Electric Katana"] = "Limited", ["Circuit Slasher"] = "Limited",
+    ["Photon Rapier"] = "Limited", ["Neon Scimitar"] = "Limited",
+    ["Plasma Blade"] = "Limited", ["Neon Edge"] = "Limited",
+    ["Holographic Sword"] = "Limited", ["Hacker Scythe"] = "Limited",
+    ["Dual Hacker Scythe"] = "Limited", ["Cyber Staff"] = "Limited",
+    ["Data Dagger"] = "Limited", ["Nano Katana"] = "Limited",
+    ["Phantom Greatsword"] = "Limited", ["Phantom Edge"] = "Limited",
+    ["Infinity Staff"] = "Limited", ["Infinity Sword"] = "Limited",
+    ["Dragon Spirit Spear"] = "Limited", ["Dragon Spirit Sword"] = "Limited",
+    ["Cyber Egg Sword"] = "Limited", ["Cyber Egg Cleaver"] = "Limited",
+    ["Photon Spike"] = "Limited", ["Digital Dagger"] = "Limited",
+    ["Neon Naginata"] = "Limited", ["Electro Axe"] = "Limited",
+    ["Techblade"] = "Limited", ["Neon Viper"] = "Limited",
+    ["Dual Neon Vipers"] = "Limited", ["Blackhole Gauntlets"] = "Limited",
+    ["Aurora Protector"] = "Limited", ["Aurora Shard"] = "Limited",
+    ["Borealis"] = "Limited", ["Data Edge"] = "Limited",
+    ["Circuit Breaker"] = "Limited", ["Neon Slasher"] = "Limited",
+    ["Ban Hammer"] = "Limited", ["Super Quantum"] = "Limited",
+    ["Steel Fang"] = "Limited", ["Iron Edge"] = "Limited",
+    ["Silver Strike"] = "Limited", ["Dragon's Claw"] = "Limited",
+    ["Eclipse Reaver"] = "Limited", ["Robotic Arm"] = "Limited",
+    ["Cyborg Blade"] = "Limited", ["Dual Cyborg Blade"] = "Limited",
+    ["Flowing Fists"] = "Limited", ["Amber Saber"] = "Limited",
+    ["Golden Harvest"] = "Limited", ["Harvest Cutter"] = "Limited",
+    ["Maple Blade"] = "Limited", ["Whispering Oak"] = "Limited",
+    ["Autumn Edge"] = "Limited", ["Crimson Fall"] = "Limited",
+    ["Champion's Edge"] = "Limited", ["Court Dominator"] = "Limited",
+    ["Speed Striker"] = "Limited", ["All-Star Striker"] = "Limited",
+    ["Draconic Bite"] = "Limited", ["Draconic Slasher"] = "Limited",
+    ["Dragon Scythe"] = "Limited", ["Dragon Blade"] = "Limited",
+    ["Ember Blade"] = "Limited", ["Flame Edge"] = "Limited",
+    ["Blazing Saber"] = "Limited", ["Inferno Reaver"] = "Limited",
+    ["Winged Warrior"] = "Limited", ["Spine Chiller"] = "Limited",
+    ["Ghoul's Edge"] = "Limited", ["Phantom Fang"] = "Limited",
+    ["Specter Slash"] = "Limited", ["Haunted Cleaver"] = "Limited",
+    ["Shadow's Bite"] = "Limited", ["Bone Breaker"] = "Limited",
+    ["Soulshard Saber"] = "Limited", ["Midnight Reaper"] = "Limited",
+    ["Wraith's Reaver"] = "Limited", ["Scorpion Staff"] = "Limited",
+    ["Chained Scorpion"] = "Limited", ["Nightmare's Edge"] = "Limited",
+    ["Wicked Fang"] = "Limited", ["Void Reaper"] = "Limited",
+    ["Phantom Cleaver"] = "Limited", ["Soulbound Blade"] = "Limited",
+    ["Dusk Fang"] = "Limited", ["Grave Digger"] = "Limited",
+    ["Moonlit Edge"] = "Limited", ["Shadow's Whisper"] = "Limited",
+    ["Blazing Azure Talon"] = "Limited", ["Dune Carver"] = "Limited",
+    ["Scarab Fang"] = "Limited", ["Pharaoh's Judgement"] = "Limited",
+    ["Sinister Scythe"] = "Limited", ["Spectral Crescent"] = "Limited",
+    ["Pumpkin Fan"] = "Limited", ["Dual Pumpkin Fan"] = "Limited",
+    ["Pumpkin Blade"] = "Limited", ["Rubber Chicken"] = "Limited",
+    ["Noodle Nuisance"] = "Limited", ["Stop Sign"] = "Limited",
+    ["Meme Destroyer"] = "Limited", ["Potato"] = "Limited",
+    ["Long-nosed Scythe"] = "Limited", ["Shadow Dragger"] = "Limited",
+    ["Ghoul's Fang"] = "Limited", ["Wraith's Slash"] = "Limited",
+    ["Specter's Bite"] = "Limited", ["Doom's Whisper"] = "Limited",
+    ["Voidbringer"] = "Limited", ["Haunted Edge"] = "Limited",
+    ["Shadowbite"] = "Limited", ["Cursed Steel"] = "Limited",
+    ["Spectral Cleaver"] = "Limited", ["Pumpkin Reaper"] = "Limited",
+    ["Mummy's Curse"] = "Limited", ["Hollow Blade"] = "Limited",
+    ["Nightshade"] = "Limited", ["Nightmare's Slash"] = "Limited",
+    ["Skullsplitter"] = "Limited", ["Headless Horror"] = "Limited",
+    ["Tombcarver"] = "Limited", ["Grim Saber"] = "Limited",
+    ["Reaper's Wrath"] = "Limited", ["Hallow's Blaster"] = "Limited",
+    ["Jackolantern"] = "Limited", ["Bonecrusher"] = "Limited",
+    ["Nightmare Cleaver"] = "Limited", ["Bone Shredder"] = "Limited",
+    ["Shadow Blade"] = "Limited", ["Nightstalker"] = "Limited",
+    ["Soul Slicer"] = "Limited", ["Gravebane"] = "Limited",
+    ["Phantom Reaver"] = "Limited", ["Eternal Nightmare"] = "Limited",
+    ["Dreadspire Blade"] = "Limited", ["Soulshredder"] = "Limited",
+    ["Hexblade"] = "Limited", ["Nightmare's Bite"] = "Limited",
+    ["Dreadclaw"] = "Limited", ["Haunting Edge"] = "Limited",
+    ["Voidhowler"] = "Limited", ["Hellbound Cleaver"] = "Limited",
+    ["Apocalypse Edge"] = "Limited", ["Scarab's Wrath"] = "Limited",
+    ["Mummy's Slasher"] = "Limited", ["Curse of the Nile"] = "Limited",
+    ["Wicked Reaper"] = "Limited", ["Frostbite Sword"] = "Limited",
+    ["Polar Edge"] = "Limited", ["Winter Warrior"] = "Limited",
+    ["Frostbite Annihilator"] = "Limited", ["Ice Carver"] = "Limited",
+    ["Frozen Edge"] = "Limited", ["Snow Piercer"] = "Limited",
+    ["Winter's Whisper"] = "Limited", ["Frostbound"] = "Limited",
+    ["Crystal Cutter"] = "Limited", ["Eternal Ice"] = "Limited",
+    ["Northern Fury"] = "Limited", ["Frosted Blade"] = "Limited",
+    ["Winter's Bite"] = "Limited", ["Glacial Spike"] = "Limited",
+    ["Snowstorm Sabre"] = "Limited", ["Chill Strike"] = "Limited",
+    ["Frosted Edge"] = "Limited", ["Glacier Carver"] = "Limited",
+    ["Icy Shard"] = "Limited", ["Ice Slicer"] = "Limited",
+    ["Snow Slicer"] = "Limited", ["Chillblade"] = "Limited",
+    ["Frostfang"] = "Limited", ["Blizzard's Fury"] = "Limited",
+    ["Aurora's Blade"] = "Limited", ["Winter Blaster"] = "Limited",
+    ["Dual Winter Blasters"] = "Limited", ["Eternal Winter"] = "Limited",
+    ["Polar Cutter"] = "Limited", ["Aurora's Edge"] = "Limited",
+    ["Yin Yang Cleaver"] = "Limited", ["Twilight Edge"] = "Limited",
+    ["Event Horizon"] = "Limited", ["Gravity Shard"] = "Limited",
+    ["Chrono Saber"] = "Limited", ["Temporal Dagger"] = "Limited",
+    ["Raging Tempest"] = "Limited", ["Fury Claw"] = "Limited",
+    ["Frozen Dagger"] = "Limited", ["Icicle Spike"] = "Limited",
+    ["Snowblade"] = "Limited", ["Blizzard Bite"] = "Limited",
+    ["Frosted Fang"] = "Limited", ["Snow Slasher"] = "Limited",
+    ["Crystal Shard"] = "Limited", ["Northern Blade"] = "Limited",
+    ["Glacial Dominance"] = "Limited", ["Polar Fury"] = "Limited",
+    ["Glacial Strike"] = "Limited", ["Frostfire Blade"] = "Limited",
+    ["Snowball Slasher"] = "Limited", ["Aurora Cutter"] = "Limited",
+    ["Frosted King"] = "Limited", ["Frostbite Saber"] = "Limited",
+    ["Winter Katana"] = "Limited", ["Snowball Cleaver"] = "Limited",
+    ["Snowman Blade"] = "Limited", ["Frosted Dagger"] = "Limited",
+    ["Icebound Saber"] = "Limited", ["Shivering Strike"] = "Limited",
+    ["Eternal Staff"] = "Limited", ["Eternal Scythe"] = "Limited",
+    ["Halberd"] = "Limited", ["Autumn Carver"] = "Limited",
+    ["Cornucopia Blade"] = "Limited", ["Feastbringer"] = "Limited",
+    ["Falling Edge"] = "Limited", ["Harvest Light"] = "Limited",
+    ["Amber Edge"] = "Limited", ["Rustic Edge"] = "Limited",
+    ["Harvest Fang"] = "Limited", ["Autumn Saber"] = "Limited",
+    ["Golden Reaper"] = "Limited", ["Maple Reaper"] = "Limited",
+    ["Scarlet Fury"] = "Limited", ["Harvest Glow"] = "Limited",
+    ["Autumn Sovereign"] = "Limited", ["Noble Fang"] = "Limited",
+    ["Sovereign Edge"] = "Limited", ["Royal Crescent"] = "Limited",
+    ["King's Judgement"] = "Limited", ["Crownslayer"] = "Limited",
+    ["Thronebreaker"] = "Limited", ["Cryo Shard"] = "Limited",
+    ["Candy Cane Cutter"] = "Limited", ["Frost Spark Saber"] = "Limited",
+    ["Snowbound Shard"] = "Limited", ["Merry Gleam"] = "Limited",
+    ["Aurora Dancer"] = "Limited", ["Polar King's Blade"] = "Limited",
+    ["Northstar Reaper"] = "Limited", ["Snowflake Edge"] = "Limited",
+    ["Frostbane"] = "Limited", ["Yuleflame"] = "Limited",
+    ["Infernal Edge"] = "Limited", ["Celestial Whisper"] = "Limited",
+    ["Polar Fang"] = "Limited", ["Frosted Saber"] = "Limited",
+    ["Jingle Blade"] = "Limited", ["Glacial Edge"] = "Limited",
+    ["Icicle Pike"] = "Limited", ["Pine Blade"] = "Limited",
+    ["Winter Fang"] = "Limited", ["Frostlight Saber"] = "Limited",
+    ["Crystal Flare"] = "Limited", ["Aurora Saber"] = "Limited",
+    ["Candycane Blaster"] = "Limited", ["Dual Candycane Blasters"] = "Limited",
+    ["Icy Shardblade"] = "Limited", ["Northern Warrior"] = "Limited",
+    ["Candy Cutter"] = "Limited", ["Frostbite Slash"] = "Limited",
+    ["Polar Cleaver"] = "Limited", ["Blizzard Fang"] = "Limited",
+    ["Frostbound Regal Edge"] = "Limited", ["Frost Monarch Saber"] = "Limited",
+    ["Glacial Crown"] = "Limited", ["Frosted Antler"] = "Limited",
+    ["Antler Blade"] = "Limited", ["Aurora Antlers"] = "Limited",
+    ["Reindeer Blade"] = "Limited", ["Reindeer"] = "Limited",
+    ["Icicle Strike"] = "Limited", ["Snowstorm Blade"] = "Limited",
+    ["Frozen Star"] = "Limited", ["Iced Shard"] = "Limited",
+    ["Festive Slice"] = "Limited", ["Holiday Cleaver"] = "Limited",
+    ["Crystal Fang"] = "Limited", ["Everfrost Blade"] = "Limited",
+    ["Frosted Slash"] = "Limited", ["Aurora Warden"] = "Limited",
+    ["Frostbite Dagger"] = "Limited", ["Crystal Dagger"] = "Limited",
+    ["Aurora Carver"] = "Limited", ["Candycane Cleaver"] = "Limited",
+    ["Holiday Saber"] = "Limited", ["Tinsel Edge"] = "Limited",
+    ["Snowflake Cutter"] = "Limited", ["Pine Shard"] = "Limited",
+    ["Icy Whisper"] = "Limited", ["Frostlight Fang"] = "Limited",
+    ["Polar Reaver"] = "Limited", ["Wintery Greatblade"] = "Limited",
+    ["Fragmented Wallblade"] = "Limited", ["Christmas Staff"] = "Limited",
+    ["Jolly Fan"] = "Limited", ["Dual Jolly Fan"] = "Limited",
+    ["Icicle Fang"] = "Limited", ["Snowdrift Saber"] = "Limited",
+    ["Polar Slicer"] = "Limited", ["Blizzard Slayer"] = "Limited",
+    ["Blizzard Katana"] = "Limited", ["Emperor Blade"] = "Limited",
+    ["Frosty Dagger"] = "Limited", ["Snowboard Edge"] = "Limited",
+    ["Icy Puck Blade"] = "Limited", ["Blizzard Skater"] = "Limited",
+    ["Crystal Blade"] = "Limited", ["Iced Avenger"] = "Limited",
+    ["Emberflare Blade"] = "Limited", ["Celebration Blade"] = "Limited",
+    ["Clockwork Cutlass"] = "Limited", ["Sparkle Saber"] = "Limited",
+    ["Midnight Cleaver"] = "Limited", ["Countdown Edge"] = "Limited",
+    ["Emberstrike"] = "Limited", ["Golden Hour Blade"] = "Limited",
+    ["New Dawn Reaver"] = "Limited", ["Firework Fang"] = "Limited",
+    ["New Year's Sickles"] = "Limited", ["New Year's Set"] = "Limited",
+    ["Celebration Spark"] = "Limited", ["Midnight Reaver"] = "Limited",
+    ["Boundless Reaver"] = "Limited", ["Eternal Slasher"] = "Limited",
+    ["Black Hole Edge"] = "Limited", ["Void Shard"] = "Limited",
+    ["Chrono Blade"] = "Limited", ["Temporal Shard"] = "Limited",
+    ["Grim Sever"] = "Limited", ["Shadowed Slasher"] = "Limited",
+    ["Confetti Cleaver"] = "Limited", ["New Year's Resolve"] = "Limited",
+    ["Clockwork Cutter"] = "Limited", ["Radiant Countdown"] = "Limited",
+    ["Dawn Shard"] = "Limited", ["Starlight Saber"] = "Limited",
+    ["Draconic Bow"] = "Limited", ["Timeless Greatsword"] = "Limited",
+    ["Aurora Fang"] = "Limited", ["Sparkler Saber"] = "Limited",
+    ["Celestial Saber"] = "Limited", ["Glittering Horizon"] = "Limited",
+    ["New Year's Lance"] = "Limited", ["Glacial Shard"] = "Limited",
+    ["Radiant Edge"] = "Limited", ["Aligned Constellation"] = "Limited",
+    ["Golden Flare"] = "Limited", ["Celebration Edge"] = "Limited",
+    ["Resolution Reaver"] = "Limited", ["Aurora Slash"] = "Limited",
+    ["Crimson Gleam"] = "Limited", ["Ecliptic Fang"] = "Limited",
+    ["Lunar Blade"] = "Limited", ["Firework Fighter"] = "Limited",
+    ["New Years Staff"] = "Limited", ["New Years Fan"] = "Limited",
+    ["Dual New Years Fan"] = "Limited", ["Neon Shard"] = "Limited",
+    ["Synth Saber"] = "Limited", ["Mechslayer Blade"] = "Limited",
+    ["Hyperion Blade"] = "Limited", ["Silken Fang"] = "Limited",
+    ["Venom Edge"] = "Limited", ["Voidweaver's Fang"] = "Limited",
+    ["Arachnoblade"] = "Limited", ["Void Weaver"] = "Limited",
+    ["Sparkler Edge"] = "Limited", ["Countdown Cutter"] = "Limited",
+    ["Celebration Cleaver"] = "Limited", ["Midnight Fang"] = "Limited",
+    ["Firework Edge"] = "Limited", ["Chrono Shard"] = "Limited",
+    ["Eclipse Edge"] = "Limited", ["Lunar Bloom"] = "Limited",
+    ["Eternal Spark"] = "Limited", ["Chrono Edge"] = "Limited",
+    ["Lunar Aegis"] = "Limited", ["Solar Flare Blade"] = "Limited",
+    ["Starlight Spear"] = "Limited", ["Golden Fang"] = "Limited",
+    ["Dual Golden Fang"] = "Limited", ["Golden Scythe"] = "Limited",
+    ["Bamboo Fang"] = "Limited", ["Coiled Blade"] = "Limited",
+    ["Lunar Edge"] = "Limited", ["Serpent's Whisper"] = "Limited",
+    ["Venom Fang"] = "Limited", ["Dual Iced Energy Blades"] = "Limited",
+    ["Ghost Slicer"] = "Limited", ["Serpents Staff"] = "Limited",
+    ["Twilight Fang"] = "Limited", ["Glyphfang"] = "Limited",
+    ["Mystic Edge"] = "Limited", ["Rune Carver"] = "Limited",
+    ["Solblade Sentinel"] = "Limited", ["Ancient Iceblade"] = "Limited",
+    ["Ancient Trident"] = "Limited", ["Eternal Shield"] = "Limited",
+    ["Jaded Staff"] = "Limited", ["Gilded Loveblade"] = "Limited",
+    ["Blushfang Dagger"] = "Limited", ["Rosevine Blade"] = "Limited",
+    ["Heartpiercer Rapier"] = "Limited", ["Twilight Serenade Blade"] = "Limited",
+    ["Enamored Edge"] = "Limited", ["Rosethorn Stiletto"] = "Limited",
+    ["Luminara Saber"] = "Limited", ["Passionflare Rapier"] = "Limited",
+    ["Amour's Radiance"] = "Limited", ["Love Sickle"] = "Limited",
+    ["Dual Love Sickle"] = "Limited", ["Fury Fang"] = "Limited",
+    ["Crimson Embrace"] = "Limited", ["Passionfang Edge"] = "Limited",
+    ["Enchanted Roseblade"] = "Limited", ["Void Piercer"] = "Limited",
+    ["Tenderstrike Dagger"] = "Limited", ["Lustrous Fang"] = "Limited",
+    ["Blazing Romance"] = "Limited", ["Devotion's Edge"] = "Limited",
+    ["Rose Axe"] = "Limited", ["Rose Twinblade"] = "Limited",
+    ["Cupid's Staff"] = "Limited", ["Titansteel Saber"] = "Limited",
+    ["Oblivion Edge"] = "Limited", ["Celestial Vanguard"] = "Limited",
+    ["Foxfang Dagger"] = "Limited", ["Spiritbound Katana"] = "Limited",
+    ["Ethereal Kitsune Blade"] = "Limited", ["Kitsune Blade"] = "Limited",
+    ["Dual Kitsune Blade"] = "Limited", ["Kitsune"] = "Limited",
+    ["Twisted Love Dagger"] = "Limited", ["Crimson Heartpiercer"] = "Limited",
+    ["Fallen Cherub's Blade"] = "Limited", ["Corrupted Bow"] = "Limited",
+    ["Ironfang"] = "Limited", ["Runeblade"] = "Limited",
+    ["Shadowpiercer"] = "Limited", ["Oblivion Fang"] = "Limited",
+    ["Twisted Rosemary Blade"] = "Limited", ["Skull King"] = "Limited",
+    ["Hex Slicer"] = "Limited", ["Dawnpiercer"] = "Limited",
+    ["Loving Backblade"] = "Limited", ["Stormfang"] = "Limited",
+    ["Voidshatter"] = "Limited", ["Meteor Fang"] = "Limited",
+    ["Solar Saber"] = "Limited", ["Lunar Slicer"] = "Limited",
+    ["Galactic Striker"] = "Limited", ["Void Breaker"] = "Limited",
+    ["Eclipse Slasher"] = "Limited", ["Dual Astral Vanguard"] = "Limited",
+    ["Astral Vanguard"] = "Limited", ["Poison Ivy"] = "Limited",
+    ["Poison Blade"] = "Limited", ["Shackled Celestial"] = "Limited",
+    ["Cosmic Edge"] = "Limited", ["Zero Saber"] = "Limited",
+    ["Asteroid Fang"] = "Limited", ["Voidwalker Blade"] = "Limited",
+    ["Solar Iceblade"] = "Limited", ["Nebula Warrior"] = "Limited",
+    ["Deepsea Reaver"] = "Limited", ["Kraken Fang"] = "Limited",
+    ["Aquatic Bow"] = "Limited", ["Holo Reaper Blade"] = "Limited",
+    ["Neon Slicer"] = "Limited", ["Cyber Fang"] = "Limited",
+    ["Holo Saber"] = "Limited", ["Voltstrike Saber"] = "Limited",
+    ["Cybernetic Edge"] = "Limited", ["Mechwave Cutter"] = "Limited",
+    ["Titanium Reaver"] = "Limited", ["Plasma Rift Blade"] = "Limited",
+    ["Mech Laser Cannon"] = "Limited", ["Dual Mech Laser Cannon"] = "Limited",
+    ["Flow Blade"] = "Limited", ["Chrono Slasher"] = "Limited",
+    ["Hyperblade Prototype"] = "Limited", ["Golden Slasher"] = "Limited",
+    ["Voided Saber"] = "Limited", ["Techno Fang"] = "Limited",
+    ["Augmented Saber"] = "Limited", ["Electric Reaver"] = "Limited",
+    ["Void Circuit Blade"] = "Limited", ["Fortune Cleaver"] = "Limited",
+    ["Spiritbloom Dagger"] = "Limited", ["Verdant Bloom Saber"] = "Limited",
+    ["Moonlit Blossom Blade"] = "Limited", ["Bloom Katana"] = "Limited",
+    ["Dual Bloom Katana"] = "Limited", ["Bloom Shuriken"] = "Limited",
+    ["Mech Staff"] = "Limited", ["Holo Fan"] = "Limited",
+    ["Dual Holo Fan"] = "Limited", ["Vortex Striker"] = "Limited",
+    ["Hyperion Saber"] = "Limited", ["Titanfall Edge"] = "Limited",
+    ["Electroclash Blade"] = "Limited", ["Void Vanguard"] = "Limited",
+    ["Mecha Axe"] = "Limited", ["Warden's Edge"] = "Limited",
+    ["Voidborn Reaver"] = "Limited", ["Survivor's Fang"] = "Limited",
+    ["Stormpiercer Blade"] = "Limited", ["Gale Sabre"] = "Limited",
+    ["Thunderfall Edge"] = "Limited", ["Chroma Pearlblade"] = "Limited",
+    ["Eclipse Warblade"] = "Limited", ["Fractured Protocol"] = "Limited",
+    ["Super Horizon"] = "Limited", ["Omega Edge"] = "Limited",
+    ["Samurai's Backblade"] = "Limited", ["Petalblade"] = "Limited",
+    ["Sunbloom Cutter"] = "Limited", ["Thornling Dagger"] = "Limited",
+    ["Verdant Saber"] = "Limited", ["Morningdew Edge"] = "Limited",
+    ["Breezeflare Sword"] = "Limited", ["Floral Tempest Blade"] = "Limited",
+    ["Amethyst Backblade"] = "Limited", ["Springblade"] = "Limited",
+    ["Vinepiercer"] = "Limited", ["Petal Dagger"] = "Limited",
+    ["Daisy Cutter"] = "Limited", ["Sunroot Blade"] = "Limited",
+    ["Radiant Bloom Saber"] = "Limited", ["Spring Sun Scythe"] = "Limited",
+    ["Spring Sun Bow"] = "Limited", ["Spring Runicblade"] = "Limited",
+    ["Cinder Fang"] = "Limited", ["Ashen Edge"] = "Limited",
+    ["Magma Splitter"] = "Limited", ["Sleek Slicer"] = "Limited",
+    ["Astral Axe"] = "Limited", ["Rustfang"] = "Limited",
+    ["Gravepiercer"] = "Limited", ["Enchanted Axe"] = "Limited",
+    ["Diamond Spear"] = "Limited", ["Infernal Slicer"] = "Limited",
+    ["Emerald Greatsword"] = "Limited", ["Tulip Cleaver"] = "Limited",
+    ["Bunny Bite"] = "Limited", ["Eggsplitter Blade"] = "Limited",
+    ["Yolk Saber"] = "Limited", ["Jellybean Jabber"] = "Limited",
+    ["Carrot Cleaver"] = "Limited", ["Eggshell Shardblade"] = "Limited",
+    ["Springbloom Saber"] = "Limited", ["Yolkbane"] = "Limited",
+    ["Chroma Chick Blade"] = "Limited", ["Easter Cannon"] = "Limited",
+    ["Dual Easter Cannon"] = "Limited", ["Lollipop Lacerator"] = "Limited",
+    ["Yolkheart Blade"] = "Limited", ["Temporal Eggblade"] = "Limited",
+    ["Choco Bunny Blade"] = "Limited", ["Gigantic Cleaver"] = "Limited",
+    ["Titan Dagger"] = "Limited", ["Eggbeater Blade"] = "Limited",
+    ["Bunny Basher"] = "Limited", ["Peep Saber"] = "Limited",
+    ["Golden Eggsmite"] = "Limited", ["Jester Blade"] = "Limited",
+    ["Crested Blade"] = "Limited", ["Pastel Bow"] = "Limited",
+    ["Enchanted Greatsword"] = "Limited", ["Emerald Eggblade"] = "Limited",
+    ["Egg Cutter"] = "Limited", ["Purple Sunblade"] = "Limited",
+    ["Prismshard Blade"] = "Limited", ["Dual Prismshard Blade"] = "Limited",
+    ["Void Eyes"] = "Limited", ["Eclipsion Blade"] = "Limited",
+    ["Aquatic Greatsword"] = "Limited", ["Spring Slicer"] = "Limited",
+    ["Astral Thorn"] = "Limited", ["Golden Axe"] = "Limited",
+    ["Burnt Relic"] = "Limited", ["Grayscale Sword"] = "Limited",
+    ["Twilight Bite"] = "Limited", ["Shattered Edge"] = "Limited",
+    ["Rusted Will"] = "Limited", ["Dull Fang"] = "Limited",
+    ["Redwake Fang"] = "Limited", ["Sunkissed Scythe"] = "Limited",
+    ["Flowering Sword"] = "Limited", ["Thornblade"] = "Limited",
+    ["Crescent Saber"] = "Limited", ["Loyal Oathblade"] = "Limited",
+    ["Shatterthorn"] = "Limited", ["Blooming Katana"] = "Limited",
+    ["Ghostfang"] = "Limited", ["Shadepiercer"] = "Limited",
+    ["Toxic Tendril"] = "Limited", ["Slime Sword"] = "Limited",
+    ["Super Bow"] = "Limited", ["Slime"] = "Limited",
+    ["Golden Snapper"] = "Limited", ["Fortune Carver"] = "Limited",
+    ["Fortunate Sword"] = "Limited", ["Lucky Dagger"] = "Limited",
+    ["Lucky Fang"] = "Limited", ["Fortune Splitter"] = "Limited",
+    ["Block Buster"] = "Limited", ["Dream Scythe"] = "Limited",
+    ["Dream Blade"] = "Limited", ["Streamblade"] = "Limited",
+    ["Ecliptarch"] = "Limited", ["Aqualure"] = "Limited",
+    ["Deepcurrent"] = "Limited", ["Tidepiercer"] = "Limited",
+    ["Aetherion"] = "Limited", ["Pine Spirit"] = "Limited",
+    ["Ashen Crescent"] = "Limited", ["Whispers of the Fallen"] = "Limited",
+    ["Ricefield Cutter"] = "Limited", ["Temple Cleaver"] = "Limited",
+    ["Silent Peak"] = "Limited", ["Cursed Ink"] = "Limited",
+    ["Duskgloom Piercer"] = "Limited", ["Nightshade Fang"] = "Limited",
+    ["Samurai's Sickle"] = "Limited", ["Samurai's Set"] = "Limited",
+    ["Broken Honor"] = "Limited", ["Stormveil"] = "Limited",
+    ["Torn Sutra"] = "Limited", ["Inkborn Howl"] = "Limited",
+    ["Peasant's Blade"] = "Limited", ["Cypress Fang"] = "Limited",
+    ["Crane Wing"] = "Limited", ["Yokai Thread"] = "Limited",
+    ["Lirilì Larilà Blade"] = "Limited", ["Shark Blade"] = "Limited",
+    ["Capuchino Assassino Blade"] = "Limited", ["Fish"] = "Limited",
+    ["TUNG TUNG TUNG SAHUR"] = "Limited", ["Aethertech Blade"] = "Limited",
+    ["Sandstorm Slasher"] = "Limited", ["Evil Runics Blade"] = "Limited",
+    ["Amethyst Greatsword"] = "Limited", ["Icebound Dominus"] = "Limited",
+    ["Chroma Seal"] = "Limited", ["Poisoned Bunny"] = "Limited",
+    ["Diamond Starblade"] = "Limited", ["Witchfire Blade"] = "Limited",
+    ["Allseeing Seer"] = "Limited", ["Crypt Keeper"] = "Limited",
+    ["Turkey Slayer"] = "Limited", ["Resolution Rumble Champion"] = "Limited",
+    ["Aurora Warrior"] = "Limited", ["Eclipse Backsword"] = "Limited",
+    ["Chroma Fortune Cleaver"] = "Limited", ["Voided Greatscythe"] = "Limited",
+    ["Soulreaper Scythe"] = "Limited", ["Cursed Relic Greatblade"] = "Limited",
+    ["Blizzard Kingscythe"] = "Limited",
+
+    -- UNIQUE
+    ["Crescendo"] = "Unique", ["Vishram"] = "Unique",
+    ["Apex Blade"] = "Unique", ["Champion Scythe"] = "Unique",
+    ["Placeholder"] = "Unique",
+    ["Riftspike Reaper"] = "Unique", ["Cryoscourge"] = "Unique",
+    ["Neon Tempest"] = "Unique", ["Glacial Seraph Staff"] = "Unique",
+    ["Dual Strawberry Cake Blade"] = "Unique",
 }
 
 -- ============================================================
@@ -1344,14 +2086,6 @@ for _, name in ipairs(SWORD_LIST) do
         SWORD_LOOKUP[key] = name
         table.insert(SORTED_SWORDS, name)
     end
-end
-table.sort(SORTED_SWORDS, function(a, b) return #a < #b end)
-
-local SWORD_LOOKUP = {}
-local SORTED_SWORDS = {}
-for _, name in ipairs(SWORD_LIST) do
-    SWORD_LOOKUP[name:lower()] = name
-    table.insert(SORTED_SWORDS, name)
 end
 table.sort(SORTED_SWORDS, function(a, b) return #a < #b end)
 
@@ -1391,35 +2125,20 @@ end
 -- STRONG CATEGORY SYSTEM
 -- ============================================================
 local CATEGORY_ALIASES = {
-    ["backsword"] = "Backsword",
-    ["backblade"] = "Backsword",
-    ["back"] = "Backsword",
-    ["greatsword"] = "Greatsword",
-    ["greatblade"] = "Greatsword",
-    ["fan"] = "Fan",
-    ["scythe"] = "Scythe",
-    ["dagger"] = "Dagger",
-    ["katana"] = "Katana",
-    ["gun"] = "Gun",
-    ["blaster"] = "Gun",
-    ["pistol"] = "Gun",
-    ["revolver"] = "Gun",
-    ["rifle"] = "Gun",
-    ["shotgun"] = "Gun",
-    ["bow"] = "Bow",
-    ["staff"] = "Staff",
-    ["spear"] = "Spear",
-    ["lance"] = "Spear",
-    ["trident"] = "Spear",
-    ["halberd"] = "Spear",
-    ["hammer"] = "Hammer",
-    ["axe"] = "Axe",
-    ["pet"] = "Pet",
-    ["companion"] = "Pet",
-    ["shoulder"] = "Pet",
-    ["dual"] = "Dual",
-    ["sword"] = "Sword",
-    ["single"] = "Sword",
+    ["backsword"] = "Backsword", ["backblade"] = "Backsword",
+    ["back"] = "Backsword", ["greatsword"] = "Greatsword",
+    ["greatblade"] = "Greatsword", ["fan"] = "Fan",
+    ["scythe"] = "Scythe", ["dagger"] = "Dagger",
+    ["katana"] = "Katana", ["gun"] = "Gun",
+    ["blaster"] = "Gun", ["pistol"] = "Gun",
+    ["revolver"] = "Gun", ["rifle"] = "Gun",
+    ["shotgun"] = "Gun", ["bow"] = "Bow",
+    ["staff"] = "Staff", ["spear"] = "Spear",
+    ["lance"] = "Spear", ["trident"] = "Spear",
+    ["halberd"] = "Spear", ["hammer"] = "Hammer",
+    ["axe"] = "Axe", ["pet"] = "Pet",
+    ["companion"] = "Pet", ["shoulder"] = "Pet",
+    ["dual"] = "Dual", ["sword"] = "Sword", ["single"] = "Sword",
 }
 
 local function CanonicalCategory(cat)
@@ -1431,51 +2150,33 @@ local function CanonicalCategory(cat)
         return "Dual " .. baseCanon
     end
     for key, val in pairs(CATEGORY_ALIASES) do
-        if low:find(key, 1, true) then
-            return val
-        end
+        if low:find(key, 1, true) then return val end
     end
     return cat
 end
 
 local NAME_CATEGORY_RULES = {
-    { pattern = "dual",            cat = "Dual" },
-    { pattern = "backblade",       cat = "Backsword" },
-    { pattern = "backsword",       cat = "Backsword" },
-    { pattern = "greatsword",      cat = "Greatsword" },
-    { pattern = "greatblade",      cat = "Greatsword" },
-    { pattern = "fan",             cat = "Fan" },
-    { pattern = "scythe",          cat = "Scythe" },
-    { pattern = "dagger",          cat = "Dagger" },
-    { pattern = "katana",          cat = "Katana" },
-    { pattern = "pistol",          cat = "Gun" },
-    { pattern = "revolver",        cat = "Gun" },
-    { pattern = "shotgun",         cat = "Gun" },
-    { pattern = "rifle",           cat = "Gun" },
-    { pattern = "blaster",         cat = "Gun" },
-    { pattern = "gun",             cat = "Gun" },
-    { pattern = "bow",             cat = "Bow" },
-    { pattern = "staff",           cat = "Staff" },
-    { pattern = "spear",           cat = "Spear" },
-    { pattern = "lance",           cat = "Spear" },
-    { pattern = "trident",         cat = "Spear" },
-    { pattern = "halberd",         cat = "Spear" },
-    { pattern = "hammer",          cat = "Hammer" },
-    { pattern = "axe",             cat = "Axe" },
-    { pattern = "companion",       cat = "Pet" },
-    { pattern = "pet",             cat = "Pet" },
-    { pattern = "shoulder",        cat = "Pet" },
-    { pattern = "blade",           cat = "Sword" },
-    { pattern = "sword",           cat = "Sword" },
+    { pattern = "dual", cat = "Dual" }, { pattern = "backblade", cat = "Backsword" },
+    { pattern = "backsword", cat = "Backsword" }, { pattern = "greatsword", cat = "Greatsword" },
+    { pattern = "greatblade", cat = "Greatsword" }, { pattern = "fan", cat = "Fan" },
+    { pattern = "scythe", cat = "Scythe" }, { pattern = "dagger", cat = "Dagger" },
+    { pattern = "katana", cat = "Katana" }, { pattern = "pistol", cat = "Gun" },
+    { pattern = "revolver", cat = "Gun" }, { pattern = "shotgun", cat = "Gun" },
+    { pattern = "rifle", cat = "Gun" }, { pattern = "blaster", cat = "Gun" },
+    { pattern = "gun", cat = "Gun" }, { pattern = "bow", cat = "Bow" },
+    { pattern = "staff", cat = "Staff" }, { pattern = "spear", cat = "Spear" },
+    { pattern = "lance", cat = "Spear" }, { pattern = "trident", cat = "Spear" },
+    { pattern = "halberd", cat = "Spear" }, { pattern = "hammer", cat = "Hammer" },
+    { pattern = "axe", cat = "Axe" }, { pattern = "companion", cat = "Pet" },
+    { pattern = "pet", cat = "Pet" }, { pattern = "shoulder", cat = "Pet" },
+    { pattern = "blade", cat = "Sword" }, { pattern = "sword", cat = "Sword" },
 }
 
 local function GuessCategoryFromName(swordName)
     if not swordName or swordName == "" then return nil end
     local low = swordName:lower()
     for _, rule in ipairs(NAME_CATEGORY_RULES) do
-        if low:find(rule.pattern, 1, true) then
-            return rule.cat
-        end
+        if low:find(rule.pattern, 1, true) then return rule.cat end
     end
     return "Sword"
 end
@@ -1483,9 +2184,7 @@ end
 local SwordCategoryCache = {}
 local function GetSwordCategory(swordName)
     if not swordName or swordName == "" then return nil end
-    if SwordCategoryCache[swordName] ~= nil then
-        return SwordCategoryCache[swordName]
-    end
+    if SwordCategoryCache[swordName] ~= nil then return SwordCategoryCache[swordName] end
     local category = nil
     if _swordModuleOK and _swordModule then
         local ok, data = pcall(function() return _swordModule:GetSword(swordName) end)
@@ -1501,9 +2200,7 @@ local function GetSwordCategory(swordName)
             category = data.AnimationType or data.SwordType or data.Type or data.Category
         end
     end
-    if not category then
-        category = GuessCategoryFromName(swordName)
-    end
+    if not category then category = GuessCategoryFromName(swordName) end
     category = CanonicalCategory(category) or category
     SwordCategoryCache[swordName] = category
     return category
@@ -1517,9 +2214,7 @@ getgenv().safeSwordStatus = "idle"
 
 do
     local cur = LocalPlayer:GetAttribute("CurrentlyEquippedSword")
-    if cur and cur ~= "" then
-        getgenv().realEquippedSword = cur
-    end
+    if cur and cur ~= "" then getgenv().realEquippedSword = cur end
 end
 
 -- ============================================================
@@ -1590,21 +2285,17 @@ task.spawn(function()
         if not realName or realName == "" then return end
         local char = LocalPlayer.Character
         if not char then return end
-
         for _, v in pairs(char:GetChildren()) do
             if v:IsA("Model") and v.Name ~= realName then
                 pcall(function() v:Destroy() end)
             end
         end
-
         pcall(function() swordInstances:EquipSwordTo(char, realName) end)
-
         pcall(function()
             if rs.Remotes:FindFirstChild("FireSwordInfo") then
                 rs.Remotes.FireSwordInfo:FireServer(realName)
             end
         end)
-
         if swordsController then
             pcall(function()
                 if swordsController.currentSword ~= nil then swordsController.currentSword = realName end
@@ -1614,7 +2305,6 @@ task.spawn(function()
                 if swordsController.SetSword then swordsController:SetSword(realName) end
             end)
         end
-
         pcall(function()
             if LocalPlayer:GetAttribute("CurrentlyEquippedSword") ~= realName then
                 LocalPlayer:SetAttribute("CurrentlyEquippedSword", realName)
@@ -1683,7 +2373,6 @@ task.spawn(function()
     local function setSword()
         if not getgenv().skinChanger then return end
         if not LocalPlayer.Character then return end
-
         if Config.SafeSwordChanger then
             if not safeValidate(false) then return end
         end
@@ -1821,18 +2510,11 @@ task.spawn(function()
     LocalPlayer:GetAttributeChangedSignal("CurrentlyEquippedSword"):Connect(function()
         local newSword = LocalPlayer:GetAttribute("CurrentlyEquippedSword")
         if not newSword or newSword == "" then return end
-
-        if getgenv().skinChanger and newSword == getgenv().swordModel then
-            return
-        end
-
+        if getgenv().skinChanger and newSword == getgenv().swordModel then return end
         getgenv().realEquippedSword = newSword
-
         if Config.SafeSwordChanger and getgenv().skinChanger then
             task.defer(function()
-                if getgenv().safeValidate then
-                    getgenv().safeValidate(true)
-                end
+                if getgenv().safeValidate then getgenv().safeValidate(true) end
             end)
         end
     end)
@@ -1885,9 +2567,6 @@ do
 
     NeverZen.Theme = DARKER_THEME
 
-    -- ============================================================
-    -- SWORD PICKER MODAL (with favorites + tabs)
-    -- ============================================================
     function NeverZen:CreateSwordPicker()
         local ScreenGui = Instance.new("ScreenGui")
         ScreenGui.Name = NeverZen:RandomString()
@@ -1968,7 +2647,6 @@ do
         CloseStroke.Color = Color3.fromRGB(55,55,55)
         CloseStroke.Parent = Close
 
-        -- Favorites system
         local FAVORITES_FILE = "S14xFluent/favorites.json"
         local Favorites = {}
 
@@ -1978,9 +2656,7 @@ do
                     local decoded = HttpService:JSONDecode(readfile(FAVORITES_FILE))
                     if type(decoded) == "table" then
                         for _, v in ipairs(decoded) do
-                            if type(v) == "string" and v ~= "" then
-                                Favorites[v] = true
-                            end
+                            if type(v) == "string" and v ~= "" then Favorites[v] = true end
                         end
                     end
                 end
@@ -1990,21 +2666,14 @@ do
         local function saveFavorites()
             pcall(function()
                 local list = {}
-                for k in pairs(Favorites) do
-                    table.insert(list, k)
-                end
-                if isfolder and makefolder and not isfolder("S14xFluent") then
-                    makefolder("S14xFluent")
-                end
-                if writefile then
-                    writefile(FAVORITES_FILE, HttpService:JSONEncode(list))
-                end
+                for k in pairs(Favorites) do table.insert(list, k) end
+                if isfolder and makefolder and not isfolder("S14xFluent") then makefolder("S14xFluent") end
+                if writefile then writefile(FAVORITES_FILE, HttpService:JSONEncode(list)) end
             end)
         end
 
         loadFavorites()
 
-        -- Tab bar
         local TabBar = Instance.new("Frame")
         TabBar.Parent = Frame
         TabBar.Position = UDim2.new(0,20,0,50)
@@ -2069,7 +2738,6 @@ do
             end
         end
 
-        -- Search
         local Search = Instance.new("Frame")
         Search.Parent = Frame
         Search.Position = UDim2.new(0,20,0,92)
@@ -2090,7 +2758,7 @@ do
         SearchBox.Size = UDim2.new(1,-18,1,0)
         SearchBox.Position = UDim2.new(0,12,0,0)
         SearchBox.Font = Enum.Font.Gotham
-        SearchBox.PlaceholderText = "Search sword..."
+        SearchBox.PlaceholderText = "Search sword or tag (limited, dev, unique...)..."
         SearchBox.PlaceholderColor3 = Color3.fromRGB(140,140,140)
         SearchBox.Text = ""
         SearchBox.TextColor3 = Color3.fromRGB(255,255,255)
@@ -2099,7 +2767,6 @@ do
         SearchBox.ClearTextOnFocus = false
         SearchBox.ZIndex = 3
 
-        -- Scroller
         local Scroller = Instance.new("ScrollingFrame")
         Scroller.Parent = Frame
         Scroller.Position = UDim2.new(0,20,0,142)
@@ -2161,11 +2828,8 @@ do
         local Rebuild
 
         local function ToggleFavorite(swordName)
-            if Favorites[swordName] then
-                Favorites[swordName] = nil
-            else
-                Favorites[swordName] = true
-            end
+            if Favorites[swordName] then Favorites[swordName] = nil
+            else Favorites[swordName] = true end
             saveFavorites()
             Rebuild(SearchBox.Text)
         end
@@ -2200,21 +2864,26 @@ do
                     favOK = (Favorites[sword] == true)
                 end
 
-                if catOK and favOK then
+                local searchOK = true
+                if searchFilter ~= "" then
+                    local low = sword:lower()
+                    local tag = SWORD_TAGS[sword]
+                    local tagLow = tag and tag:lower() or ""
+                    searchOK = low:find(searchFilter, 1, true) or tagLow:find(searchFilter, 1, true)
+                end
+
+                if catOK and favOK and searchOK then
                     if searchFilter == "" then
                         table.insert(candidates, { name = sword, rank = 0, pos = 0 })
                     else
                         local low = sword:lower()
-                        local pos = low:find(searchFilter, 1, true)
-                        if pos then
-                            local rank = 3
-                            if pos == 1 then
-                                rank = 1
-                            elseif low:sub(pos - 1, pos - 1) == " " then
-                                rank = 2
-                            end
-                            table.insert(candidates, { name = sword, rank = rank, pos = pos })
-                        end
+                        local tag = SWORD_TAGS[sword]
+                        local tagLow = tag and tag:lower() or ""
+                        local pos = low:find(searchFilter, 1, true) or tagLow:find(searchFilter, 1, true) or 0
+                        local rank = 3
+                        if pos == 1 then rank = 1
+                        elseif low:sub(pos - 1, pos - 1) == " " then rank = 2 end
+                        table.insert(candidates, { name = sword, rank = rank, pos = pos })
                     end
                 end
             end
@@ -2230,6 +2899,13 @@ do
             for _, entry in ipairs(candidates) do
                 local sword = entry.name
                 local isFav = Favorites[sword] == true
+                local tag = SWORD_TAGS[sword]
+
+                local displayName = sword
+                if tag then
+                    local color = TAG_COLORS[tag] or "#ffffff"
+                    displayName = "<font color=\"" .. color .. "\"><b>[" .. tag .. "]</b></font> " .. sword
+                end
 
                 local Row = Instance.new("Frame")
                 Row.Parent = Scroller
@@ -2246,7 +2922,8 @@ do
                 NameBtn.Parent = Row
                 NameBtn.Size = UDim2.new(1,-100,1,0)
                 NameBtn.BackgroundTransparency = 1
-                NameBtn.Text = sword
+                NameBtn.Text = displayName
+                NameBtn.RichText = true
                 NameBtn.TextColor3 = Color3.fromRGB(255,255,255)
                 NameBtn.Font = Enum.Font.Gotham
                 NameBtn.TextSize = 14
@@ -2291,9 +2968,7 @@ do
                     Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
                 end)
                 NameBtn.MouseButton1Click:Connect(function()
-                    if onPickCallback then
-                        pcall(onPickCallback, sword)
-                    end
+                    if onPickCallback then pcall(onPickCallback, sword) end
                     ScreenGui.Enabled = false
                 end)
 
@@ -2387,9 +3062,6 @@ do
         }
     end
 
-    -- ============================================================
-    -- MAIN WINDOW
-    -- ============================================================
     function NeverZen.new(config)
         config = config or {}
         config.Name = config.Name or "S14x"
@@ -2465,12 +3137,7 @@ do
         end)
 
         local TITLE_SIZE = 17
-        local titleSize = TextService:GetTextSize(
-            config.Name,
-            TITLE_SIZE,
-            Enum.Font.GothamBold,
-            Vector2.new(math.huge, math.huge)
-        )
+        local titleSize = TextService:GetTextSize(config.Name, TITLE_SIZE, Enum.Font.GothamBold, Vector2.new(math.huge, math.huge))
         local titleWidth = titleSize.X
         local titleLeft = 5
         local lineX = titleLeft + titleWidth + 8
@@ -2484,7 +3151,6 @@ do
         HeaderText.TextColor3 = NeverZen.Theme.Hightlight
         HeaderText.TextSize = TITLE_SIZE
         HeaderText.TextXAlignment = Enum.TextXAlignment.Left
-        HeaderText.TextTruncate = Enum.TextTruncate.None
         table.insert(NeverZen.HighlightUpdateFunctions, function()
             HeaderText.TextColor3 = NeverZen.Theme.Hightlight
         end)
@@ -3199,75 +3865,6 @@ do
                     }
                 end
 
-                function SectionSignal:AddInput(cfg)
-                    cfg = cfg or {}
-                    cfg.Name = cfg.Name or "Input"
-                    cfg.Placeholder = cfg.Placeholder or ""
-                    cfg.Default = cfg.Default or ""
-                    cfg.Callback = cfg.Callback or function() end
-
-                    local Input = Instance.new("Frame")
-                    local sys = Instance.new("Frame")
-                    local UICorner = Instance.new("UICorner")
-                    local value = Instance.new("TextBox")
-                    local UIStroke = Instance.new("UIStroke")
-                    local Label = Instance.new("TextLabel")
-
-                    Input.Parent = Section
-                    Input.BackgroundTransparency = 1
-                    Input.Size = UDim2.new(1,-5,0,36)
-
-                    sys.Parent = Input
-                    sys.AnchorPoint = Vector2.new(1,0.5)
-                    sys.BackgroundColor3 = NeverZen.Theme.BackgroundColor
-                    sys.BorderSizePixel = 0
-                    sys.Position = UDim2.new(1,-4,0.5,0)
-                    sys.Size = UDim2.new(0,150,0,24)
-
-                    UICorner.CornerRadius = UDim.new(0,4)
-                    UICorner.Parent = sys
-
-                    value.Parent = sys
-                    value.BackgroundTransparency = 1
-                    value.Size = UDim2.new(1,-12,1,0)
-                    value.Position = UDim2.new(0,6,0,0)
-                    value.Font = Enum.Font.GothamMedium
-                    value.Text = cfg.Default
-                    value.PlaceholderText = cfg.Placeholder
-                    value.TextColor3 = Color3.fromRGB(255,255,255)
-                    value.PlaceholderColor3 = Color3.fromRGB(160,160,160)
-                    value.TextSize = 13
-                    value.TextTransparency = 0.1
-                    value.ClearTextOnFocus = false
-                    value.TextXAlignment = Enum.TextXAlignment.Left
-
-                    UIStroke.Color = NeverZen.Theme.StrokeColor
-                    UIStroke.Parent = sys
-
-                    Label.Parent = Input
-                    Label.AnchorPoint = Vector2.new(0,0.5)
-                    Label.BackgroundTransparency = 1
-                    Label.Position = UDim2.new(0,8,0.5,0)
-                    Label.Size = UDim2.new(1,-170,0.75,0)
-                    Label.Font = Enum.Font.GothamMedium
-                    Label.Text = cfg.Name
-                    Label.TextColor3 = Color3.fromRGB(255,255,255)
-                    Label.TextSize = 15
-                    Label.TextTransparency = 0.25
-                    Label.TextXAlignment = Enum.TextXAlignment.Left
-
-                    value.FocusLost:Connect(function(enterPressed)
-                        if enterPressed and value.Text ~= "" then
-                            cfg.Callback(value.Text, cfg)
-                        end
-                    end)
-
-                    return {
-                        SetValue = function(self, v) value.Text = v end,
-                        Visible = function(self, v) Input.Visible = v end,
-                    }
-                end
-
                 return SectionSignal
             end
 
@@ -3529,8 +4126,7 @@ local CpsLabel = MacroSection:AddLabel("CPS: " .. tostring(Config.TargetCPS))
 
 local CpsSlider
 CpsSlider = MacroSection:AddSlider({
-    Name = "CPS",
-    Min = 5, Max = 500, Round = 0, Step = 5,
+    Name = "CPS", Min = 5, Max = 500, Round = 0, Step = 5,
     Default = Config.TargetCPS,
     Callback = function(v)
         Config.TargetCPS = v
