@@ -115,7 +115,7 @@ local Config = {
 
     ParryMethod = "Legit",
 
-    Headless = false,
+    HeadlessMode = "Off",  -- "Off" | "V1" | "V2"
     Korblox = false,
 
     SafeSwordChanger = true,
@@ -134,8 +134,18 @@ local function loadConfig()
             if k == "Keybind" or k == "TriggerBotKeybind" then
                 local e = Enum.KeyCode[v]
                 if e then Config[k] = e end
+            elseif k == "Headless" then
+                -- legacy key, handled below
             elseif Config[k] ~= nil then
                 Config[k] = v
+            end
+        end
+        -- legacy translation: Headless boolean -> HeadlessMode
+        if data.HeadlessMode == nil and data.Headless ~= nil then
+            if data.Headless then
+                Config.HeadlessMode = "V1"
+            else
+                Config.HeadlessMode = "Off"
             end
         end
     end
@@ -149,6 +159,9 @@ local function loadConfig()
     if Config.SafeSwordChanger == nil then Config.SafeSwordChanger = true end
     if Config.StrictCategory == nil then Config.StrictCategory = true end
     if Config.SaveLastEquipped == nil then Config.SaveLastEquipped = true end
+    if Config.HeadlessMode ~= "Off" and Config.HeadlessMode ~= "V1" and Config.HeadlessMode ~= "V2" then
+        Config.HeadlessMode = "Off"
+    end
 
     NeverZen.Theme.Hightlight = Color3.fromRGB(Config.ThemeColorR, Config.ThemeColorG, Config.ThemeColorB)
     if NeverZen.UpdateHighlightColor then NeverZen:UpdateHighlightColor() end
@@ -357,6 +370,16 @@ task.spawn(function()
     end
 end)
 
+-- ============================================================
+-- PARRY ANIM GUARD
+-- Only touch the animation tracks while the macro is actively
+-- spamming (and the anim fix is on). This leaves manual F/click
+-- parries alone so the game's own animation plays out fully.
+-- ============================================================
+local function _shouldTouchParryAnim()
+    return Config.Spamming and Config.MacroAnimationFix
+end
+
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccess.OnClientEvent:Connect(function()
         if SpamAnimParries < 5 then
@@ -366,6 +389,9 @@ pcall(function()
             end)
         end
         SpamAnimBypass = true
+
+        if not _shouldTouchParryAnim() then return end
+
         local char = GetCharacter()
         if not char then return end
         local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -382,6 +408,8 @@ end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccessAll.OnClientEvent:Connect(function()
+        if not _shouldTouchParryAnim() then return end
+
         local char = GetCharacter()
         if not char then return end
         local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -788,14 +816,83 @@ local function removeKorblox(char)
     end
 end
 
-local function setHeadlessState(char, state)
-    local head = char:WaitForChild("Head", 3)
-    if not head then return end
-    head.Transparency = state and 1 or 0
-    for _, c in ipairs(head:GetDescendants()) do
-        if c:IsA("BasePart") then c.Transparency = state and 1 or 0
-        elseif c:IsA("Decal") or c:IsA("Texture") then c.Transparency = state and 1 or 0
-        elseif c:IsA("WrapTarget") then c.Enabled = not state end
+-- ============================================================
+-- HEADLESS SYSTEM (V1 / V2)
+-- V1: hides the Head part + its decals/textures.
+-- V2: V1 + hides hair and any accessory welded to the Head
+--     (hat/hair/face/etc.).
+-- ============================================================
+local function setAccessoryHidden(accessory, state)
+    for _, d in ipairs(accessory:GetDescendants()) do
+        if d:IsA("BasePart") then
+            d.Transparency = state and 1 or 0
+        elseif d:IsA("Decal") or d:IsA("Texture") then
+            d.Transparency = state and 1 or 0
+        elseif d:IsA("WrapTarget") then
+            d.Enabled = not state
+        end
+    end
+end
+
+local function getHeadAccessories(char)
+    local list = {}
+    local head = char:FindFirstChild("Head")
+    if not head then return list end
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("Accessory") then
+            local isHead = false
+
+            local ok, at = pcall(function() return v.AccessoryType end)
+            if ok and at then
+                if at == Enum.AccessoryType.Hat
+                   or at == Enum.AccessoryType.Hair
+                   or at == Enum.AccessoryType.Face
+                   or at == Enum.AccessoryType.Neck then
+                    isHead = true
+                end
+            end
+
+            if not isHead then
+                for _, d in ipairs(v:GetDescendants()) do
+                    if d:IsA("BasePart") then
+                        for _, w in ipairs(d:GetChildren()) do
+                            if w:IsA("Weld") or w:IsA("WeldConstraint") or w:IsA("Motor6D") then
+                                local other = (w.Part0 == d) and w.Part1 or w.Part0
+                                if other == head then isHead = true break end
+                            end
+                        end
+                    end
+                    if isHead then break end
+                end
+            end
+
+            if isHead then table.insert(list, v) end
+        end
+    end
+    return list
+end
+
+local function applyHeadlessState(char)
+    if not char or not char.Parent then return end
+    local mode = Config.HeadlessMode or "Off"
+
+    -- Head (both V1 and V2 hide it)
+    local head = char:FindFirstChild("Head")
+    if head then
+        local visible = (mode == "Off")
+        head.Transparency = visible and 0 or 1
+        for _, c in ipairs(head:GetDescendants()) do
+            if c:IsA("BasePart") then c.Transparency = visible and 0 or 1
+            elseif c:IsA("Decal") or c:IsA("Texture") then c.Transparency = visible and 0 or 1
+            elseif c:IsA("WrapTarget") then c.Enabled = visible
+            end
+        end
+    end
+
+    -- Accessories: only V2 hides them
+    local accs = getHeadAccessories(char)
+    for _, acc in ipairs(accs) do
+        setAccessoryHidden(acc, mode == "V2")
     end
 end
 
@@ -809,7 +906,20 @@ local function setupCharacterVisuals(char)
     if not char.Parent then return end
     cleanCharacterMeshes(char)
     if Config.Korblox then pcall(applyKorblox, char) end
-    if Config.Headless then pcall(setHeadlessState, char, true) end
+    pcall(applyHeadlessState, char)
+
+    -- Re-apply headless on late-loading accessories
+    char.ChildAdded:Connect(function(child)
+        if Config.HeadlessMode == "V2" and child:IsA("Accessory") then
+            task.wait(0.15)
+            pcall(applyHeadlessState, char)
+        end
+    end)
+
+    -- One extra delayed sweep in case accessories appeared after the first pass
+    task.delay(1.5, function()
+        if char.Parent then pcall(applyHeadlessState, char) end
+    end)
 end
 
 if LocalPlayer.Character then task.spawn(setupCharacterVisuals, LocalPlayer.Character) end
@@ -907,7 +1017,7 @@ local SWORD_LIST = {
     "Monarch Blade", "Dual Monarch Blade", "Monarch Shield", "Dual Monarch Set",
     "Coffin", "Rosefire Blade", "Dual Rosefire Blade", "Rosefire Scythe",
     "Dual Rosefire Scythe", "Moonflower Katana", "Moonflower Greatsword",
-    "Placeholder", "Penguin", "Polar Bear", "Serpent", "Serpent's Katana", 
+    "Placeholder", "Penguin", "Polar Bear", "Serpent", "Serpent's Katana",
     "Aurelius", "Winter Wolf", "Apex Blade", "Avalanche Blade", "Champion Scythe", "Vishram",
     "Crescendo", "Cyber Thorn", "Essence Cleaver", "Molten Greatblade", "Shattered Sword",
     "Anime Sword", "Bowtie Blade", "Party Popper", "Festive Eclipse Blade",
@@ -2077,22 +2187,6 @@ local SWORD_TAGS = {
 }
 
 -- ============================================================
--- Build lookup + sorted tables (auto-deduped, case-insensitive)
--- ============================================================
-local SWORD_LOOKUP = {}
-local SORTED_SWORDS = {}
-local _seen = {}
-for _, name in ipairs(SWORD_LIST) do
-    local key = name:lower()
-    if not _seen[key] then
-        _seen[key] = true
-        SWORD_LOOKUP[key] = name
-        table.insert(SORTED_SWORDS, name)
-    end
-end
-table.sort(SORTED_SWORDS, function(a, b) return #a < #b end)
-
--- ============================================================
 -- SWORD MODULE
 -- ============================================================
 local _swordModule = nil
@@ -2144,35 +2238,90 @@ local CATEGORY_ALIASES = {
     ["dual"] = "Dual", ["sword"] = "Sword", ["single"] = "Sword",
 }
 
+-- Ordered matching rules — specific patterns first. This is
+-- CRITICAL: without the ordering, "SideSword" would match "sword"
+-- and every weapon would collapse into the same "Sword" bucket,
+-- making the Safe Mode filter show all swords instead of just
+-- the compatible ones.
+local SPECIFIC_CATEGORY_MATCH = {
+    { "sidesword",   "SideSword" },
+    { "side",        "SideSword" },
+    { "greatscythe", "Greatsword" },
+    { "kingscythe",  "Greatsword" },
+    { "greatblade",  "Greatsword" },
+    { "greatsword",  "Greatsword" },
+    { "backblade",   "Backsword" },
+    { "backsword",   "Backsword" },
+}
+
+-- ============================================================
+-- MANUAL CATEGORY OVERRIDES
+-- Absolute priority over the game module and name guesser.
+-- ============================================================
+local SWORD_CATEGORY_OVERRIDES = {
+    ["Blizzard Kingscythe"]    = "Greatsword",
+    ["Blizzard Greatscythe"]   = "Greatsword",
+    ["Bloomlight Greatscythe"] = "Greatsword",
+}
+
 local function CanonicalCategory(cat)
     if not cat or cat == "" then return nil end
     local low = tostring(cat):lower()
+
     if low:find("dual", 1, true) then
-        local base = low:gsub("dual", ""):gsub("%s+", ""):gsub("^%s+", ""):gsub("%s+$", "")
-        local baseCanon = CATEGORY_ALIASES[base] or CATEGORY_ALIASES[low] or "Dual"
+        local base = low:gsub("dual", ""):gsub("%s+", "")
+        for _, pair in ipairs(SPECIFIC_CATEGORY_MATCH) do
+            if base:find(pair[1], 1, true) then return "Dual " .. pair[2] end
+        end
+        local baseCanon = CATEGORY_ALIASES[base] or "Dual"
         return "Dual " .. baseCanon
     end
+
+    -- Specific patterns first (order matters)
+    for _, pair in ipairs(SPECIFIC_CATEGORY_MATCH) do
+        if low:find(pair[1], 1, true) then return pair[2] end
+    end
+
+    -- Then the general alias map
     for key, val in pairs(CATEGORY_ALIASES) do
         if low:find(key, 1, true) then return val end
     end
+
     return cat
 end
 
 local NAME_CATEGORY_RULES = {
-    { pattern = "dual", cat = "Dual" }, { pattern = "backblade", cat = "Backsword" },
-    { pattern = "backsword", cat = "Backsword" }, { pattern = "greatsword", cat = "Greatsword" },
-    { pattern = "greatblade", cat = "Greatsword" }, { pattern = "fan", cat = "Fan" },
-    { pattern = "scythe", cat = "Scythe" }, { pattern = "dagger", cat = "Dagger" },
-    { pattern = "katana", cat = "Katana" }, { pattern = "pistol", cat = "Gun" },
-    { pattern = "revolver", cat = "Gun" }, { pattern = "shotgun", cat = "Gun" },
-    { pattern = "rifle", cat = "Gun" }, { pattern = "blaster", cat = "Gun" },
-    { pattern = "gun", cat = "Gun" }, { pattern = "bow", cat = "Bow" },
-    { pattern = "staff", cat = "Staff" }, { pattern = "spear", cat = "Spear" },
-    { pattern = "lance", cat = "Spear" }, { pattern = "trident", cat = "Spear" },
-    { pattern = "halberd", cat = "Spear" }, { pattern = "hammer", cat = "Hammer" },
-    { pattern = "axe", cat = "Axe" }, { pattern = "companion", cat = "Pet" },
-    { pattern = "pet", cat = "Pet" }, { pattern = "shoulder", cat = "Pet" },
-    { pattern = "blade", cat = "Sword" }, { pattern = "sword", cat = "Sword" },
+    { pattern = "greatscythe", cat = "Greatsword" },
+    { pattern = "kingscythe",  cat = "Greatsword" },
+    { pattern = "greatsword",  cat = "Greatsword" },
+    { pattern = "greatblade",  cat = "Greatsword" },
+    { pattern = "sidesword",   cat = "SideSword" },
+    { pattern = "dual", cat = "Dual" },
+    { pattern = "backblade", cat = "Backsword" },
+    { pattern = "backsword", cat = "Backsword" },
+    { pattern = "fan", cat = "Fan" },
+    { pattern = "scythe", cat = "Scythe" },
+    { pattern = "dagger", cat = "Dagger" },
+    { pattern = "katana", cat = "Katana" },
+    { pattern = "pistol", cat = "Gun" },
+    { pattern = "revolver", cat = "Gun" },
+    { pattern = "shotgun", cat = "Gun" },
+    { pattern = "rifle", cat = "Gun" },
+    { pattern = "blaster", cat = "Gun" },
+    { pattern = "gun", cat = "Gun" },
+    { pattern = "bow", cat = "Bow" },
+    { pattern = "staff", cat = "Staff" },
+    { pattern = "spear", cat = "Spear" },
+    { pattern = "lance", cat = "Spear" },
+    { pattern = "trident", cat = "Spear" },
+    { pattern = "halberd", cat = "Spear" },
+    { pattern = "hammer", cat = "Hammer" },
+    { pattern = "axe", cat = "Axe" },
+    { pattern = "companion", cat = "Pet" },
+    { pattern = "pet", cat = "Pet" },
+    { pattern = "shoulder", cat = "Pet" },
+    { pattern = "blade", cat = "Sword" },
+    { pattern = "sword", cat = "Sword" },
 }
 
 local function GuessCategoryFromName(swordName)
@@ -2188,6 +2337,15 @@ local SwordCategoryCache = {}
 local function GetSwordCategory(swordName)
     if not swordName or swordName == "" then return nil end
     if SwordCategoryCache[swordName] ~= nil then return SwordCategoryCache[swordName] end
+
+    -- 1) Manual override first
+    local override = SWORD_CATEGORY_OVERRIDES[swordName]
+    if override then
+        SwordCategoryCache[swordName] = override
+        return override
+    end
+
+    -- 2) Ask the game module
     local category = nil
     if _swordModuleOK and _swordModule then
         local ok, data = pcall(function() return _swordModule:GetSword(swordName) end)
@@ -2203,8 +2361,19 @@ local function GetSwordCategory(swordName)
             category = data.AnimationType or data.SwordType or data.Type or data.Category
         end
     end
+
+    -- 3) Name-based fallback
     if not category then category = GuessCategoryFromName(swordName) end
     category = CanonicalCategory(category) or category
+
+    -- 4) Safety net — Greatscythes / Kingscythes are Greatswords
+    if category == "Scythe" then
+        local low = swordName:lower()
+        if low:find("greatscythe", 1, true) or low:find("kingscythe", 1, true) then
+            category = "Greatsword"
+        end
+    end
+
     SwordCategoryCache[swordName] = category
     return category
 end
@@ -2837,14 +3006,45 @@ do
             Rebuild(SearchBox.Text)
         end
 
+        -- Resolve the "real" sword name with fallbacks, in case
+        -- the tracked global hasn't been set yet for any reason.
+        local function resolveRealSwordName()
+            local cached = getgenv().realEquippedSword
+            if cached and cached ~= "" then return cached end
+            local att = LocalPlayer:GetAttribute("CurrentlyEquippedSword")
+            if att and att ~= "" then
+                getgenv().realEquippedSword = att
+                return att
+            end
+            local char = LocalPlayer.Character
+            if char then
+                for _, v in pairs(char:GetChildren()) do
+                    if v:IsA("Model") then
+                        local hit = SWORD_LOOKUP[v.Name:lower()]
+                        if hit then
+                            getgenv().realEquippedSword = hit
+                            return hit
+                        end
+                    end
+                end
+            end
+            return nil
+        end
+
         Rebuild = function(searchFilter)
             for _, r in ipairs(rows) do r:Destroy() end
             rows = {}
             searchFilter = searchFilter and searchFilter:lower() or ""
 
-            local catFilter = currentCategoryFilter()
+            local safeModeOn  = Config.SafeSwordChanger and true or false
+            local realSword   = resolveRealSwordName()
+            local realCat     = (realSword and realSword ~= "") and GetSwordCategory(realSword) or nil
+            -- Only enforce a category filter when Safe Mode is ON *and* we
+            -- know the real sword's category. If Safe Mode is OFF, catFilter
+            -- is nil, so every sword is allowed.
+            local catFilter   = (safeModeOn and realCat) or nil
 
-            if not Config.SafeSwordChanger then
+            if not safeModeOn then
                 FilterTag.Text = "FILTER OFF — all swords"
                 FilterTag.TextColor3 = Color3.fromRGB(255,180,120)
             elseif catFilter then
@@ -2856,24 +3056,34 @@ do
             end
 
             local candidates = {}
+            local totalPassedFilter = 0
+
             for _, sword in ipairs(SWORD_LIST) do
+                -- Category gate: enforce strictly when Safe Mode is ON
                 local catOK = true
                 if catFilter then
-                    catOK = (GetSwordCategory(sword) == catFilter)
+                    local sc = GetSwordCategory(sword)
+                    catOK = (sc ~= nil and sc == catFilter)
                 end
 
+                -- Favorites gate
                 local favOK = true
                 if currentTab == "favorites" then
                     favOK = (Favorites[sword] == true)
                 end
 
+                -- Search gate (applies on top of category filter)
                 local searchOK = true
                 if searchFilter ~= "" then
                     local low = sword:lower()
                     local tag = SWORD_TAGS[sword]
                     local tagLow = tag and tag:lower() or ""
-                    searchOK = low:find(searchFilter, 1, true) or tagLow:find(searchFilter, 1, true)
+                    local p1 = low:find(searchFilter, 1, true)
+                    local p2 = tagLow ~= "" and tagLow:find(searchFilter, 1, true) or nil
+                    searchOK = (p1 ~= nil) or (p2 ~= nil)
                 end
+
+                if catOK then totalPassedFilter = totalPassedFilter + 1 end
 
                 if catOK and favOK and searchOK then
                     if searchFilter == "" then
@@ -2899,6 +3109,11 @@ do
             end)
 
             local count = #candidates
+            if safeModeOn and catFilter then
+                FilterTag.Text = "FILTER: " .. tostring(catFilter)
+                    .. "  (" .. count .. " of " .. totalPassedFilter .. " in category)"
+            end
+
             for _, entry in ipairs(candidates) do
                 local sword = entry.name
                 local isFav = Favorites[sword] == true
@@ -4181,14 +4396,42 @@ TBSection:AddKeybind({
 -- ========== VISUALS TAB ==========
 local VisSection = VisTab:AddSection({ Name = "Cosmetics" })
 
-local HeadlessToggle = VisSection:AddToggle({
-    Name = "Headless",
-    Default = Config.Headless,
+-- Headless V1 / V2 are mutually exclusive radio-style toggles.
+local HeadlessV1Toggle, HeadlessV2Toggle
+
+HeadlessV1Toggle = VisSection:AddToggle({
+    Name = "Headless V1",
+    Default = (Config.HeadlessMode == "V1"),
     Callback = function(v)
-        Config.Headless = v
+        if v then
+            Config.HeadlessMode = "V1"
+            if HeadlessV2Toggle then HeadlessV2Toggle:SetValue(false) end
+        else
+            if Config.HeadlessMode == "V1" then
+                Config.HeadlessMode = "Off"
+            end
+        end
         saveConfig()
         local char = GetCharacter()
-        if char then pcall(setHeadlessState, char, v) end
+        if char then pcall(applyHeadlessState, char) end
+    end,
+})
+
+HeadlessV2Toggle = VisSection:AddToggle({
+    Name = "Headless V2 (no hair/face accs)",
+    Default = (Config.HeadlessMode == "V2"),
+    Callback = function(v)
+        if v then
+            Config.HeadlessMode = "V2"
+            if HeadlessV1Toggle then HeadlessV1Toggle:SetValue(false) end
+        else
+            if Config.HeadlessMode == "V2" then
+                Config.HeadlessMode = "Off"
+            end
+        end
+        saveConfig()
+        local char = GetCharacter()
+        if char then pcall(applyHeadlessState, char) end
     end,
 })
 
@@ -4422,7 +4665,8 @@ SetSection:AddButton({
         pcall(function() TBToggle:SetValue(Config.TriggerBot) end)
         pcall(function() TBAnimFix:SetValue(Config.TriggerBotAnimationFix) end)
         pcall(function() TBInfDetect:SetValue(Config.TriggerBotInfinityDetection) end)
-        pcall(function() HeadlessToggle:SetValue(Config.Headless) end)
+        pcall(function() HeadlessV1Toggle:SetValue(Config.HeadlessMode == "V1") end)
+        pcall(function() HeadlessV2Toggle:SetValue(Config.HeadlessMode == "V2") end)
         pcall(function() KorbloxToggle:SetValue(Config.Korblox) end)
         pcall(function() SafeSwordToggle:SetValue(Config.SafeSwordChanger) end)
         pcall(function() StrictToggle:SetValue(Config.StrictCategory) end)
