@@ -841,18 +841,20 @@ local function getHeadAccessories(char)
     for _, v in ipairs(char:GetChildren()) do
         if v:IsA("Accessory") then
             local isHead = false
+            local isNeck = false
 
             local ok, at = pcall(function() return v.AccessoryType end)
             if ok and at then
-                if at == Enum.AccessoryType.Hat
+                if at == Enum.AccessoryType.Neck then
+                    isNeck = true
+                elseif at == Enum.AccessoryType.Hat
                    or at == Enum.AccessoryType.Hair
-                   or at == Enum.AccessoryType.Face
-                   or at == Enum.AccessoryType.Neck then
+                   or at == Enum.AccessoryType.Face then
                     isHead = true
                 end
             end
 
-            if not isHead then
+            if not isNeck and not isHead then
                 for _, d in ipairs(v:GetDescendants()) do
                     if d:IsA("BasePart") then
                         for _, w in ipairs(d:GetChildren()) do
