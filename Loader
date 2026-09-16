@@ -112,6 +112,7 @@ local Config = {
     TriggerBotKeybind = Enum.KeyCode.V,
     TriggerBotAnimationFix = true,
     TriggerBotInfinityDetection = false,
+    TriggerBotDistance = 1,
 
     ParryMethod = "Legit",
 
@@ -155,6 +156,8 @@ local function loadConfig()
     Config.TargetCPS = math.clamp(Config.TargetCPS, 5, 500)
     if typeof(Config.AutoParryAccuracy) ~= "number" then Config.AutoParryAccuracy = 100 end
     Config.AutoParryAccuracy = math.clamp(Config.AutoParryAccuracy, 1, 100)
+    if typeof(Config.TriggerBotDistance) ~= "number" then Config.TriggerBotDistance = 1 end
+    Config.TriggerBotDistance = math.clamp(Config.TriggerBotDistance, 1, 1.5)
     if Config.ParryMethod ~= "Legit" and Config.ParryMethod ~= "Blatant" then Config.ParryMethod = "Legit" end
     if Config.SafeSwordChanger == nil then Config.SafeSwordChanger = true end
     if Config.StrictCategory == nil then Config.StrictCategory = true end
@@ -373,11 +376,37 @@ end)
 -- ============================================================
 -- PARRY ANIM GUARD
 -- Only touch the animation tracks while the macro is actively
--- spamming (and the anim fix is on). This leaves manual F/click
--- parries alone so the game's own animation plays out fully.
+-- spamming (and the anim fix is on) — or shortly after the
+-- triggerbot fired with its anim fix on. This leaves manual
+-- F/click parries alone so the game's own animation plays out
+-- fully.
 -- ============================================================
+local _tbLastFire = 0
+
 local function _shouldTouchParryAnim()
-    return Config.Spamming and Config.MacroAnimationFix
+    if Config.Spamming and Config.MacroAnimationFix then
+        return true
+    end
+    if Config.TriggerBot and Config.TriggerBotAnimationFix then
+        -- only clean up shortly after the triggerbot itself fired,
+        -- so manual F/click parries are still left alone
+        return (os.clock() - _tbLastFire) < 0.5
+    end
+    return false
+end
+
+local function StopParryGrabTracks()
+    local char = GetCharacter()
+    if not char then return end
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    local animator = humanoid:FindFirstChildOfClass("Animator")
+    if not animator then return end
+    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+        if track.Name == "GrabParry" or track.Name == "Grab" then
+            pcall(function() track:Stop(0.1) end)
+        end
+    end
 end
 
 pcall(function()
@@ -391,36 +420,14 @@ pcall(function()
         SpamAnimBypass = true
 
         if not _shouldTouchParryAnim() then return end
-
-        local char = GetCharacter()
-        if not char then return end
-        local humanoid = char:FindFirstChildOfClass("Humanoid")
-        if not humanoid then return end
-        local animator = humanoid:FindFirstChildOfClass("Animator")
-        if not animator then return end
-        for _, track in pairs(animator:GetPlayingAnimationTracks()) do
-            if track.Name == "GrabParry" or track.Name == "Grab" then
-                pcall(function() track:Stop(0.1) end)
-            end
-        end
+        StopParryGrabTracks()
     end)
 end)
 
 pcall(function()
     ReplicatedStorage.Remotes.ParrySuccessAll.OnClientEvent:Connect(function()
         if not _shouldTouchParryAnim() then return end
-
-        local char = GetCharacter()
-        if not char then return end
-        local humanoid = char:FindFirstChildOfClass("Humanoid")
-        if not humanoid then return end
-        local animator = humanoid:FindFirstChildOfClass("Animator")
-        if not animator then return end
-        for _, track in pairs(animator:GetPlayingAnimationTracks()) do
-            if track.Name == "GrabParry" or track.Name == "Grab" then
-                pcall(function() track:Stop(0.1) end)
-            end
-        end
+        StopParryGrabTracks()
     end)
 end)
 
@@ -713,12 +720,22 @@ RunService.PreSimulation:Connect(function()
         if td.Triggered then continue end
 
         local distance = (char.PrimaryPart.Position - ball.Position).Magnitude
-        local parry_accuracy = CalcParryAccuracy(zoomies)
+        -- TriggerBotDistance: 1x = original range, up to 1.5x for a wider
+        -- / earlier trigger window (slider in the Triggerbot tab)
+        local parry_accuracy = CalcParryAccuracy(zoomies) * (Config.TriggerBotDistance or 1)
 
         if distance <= parry_accuracy then
             td.Triggered = true
-            if Config.TriggerBotAnimationFix then PlaySingleParryAnimation() end
-            FireParry()
+            -- fire first; only play the local animation if the remote
+            -- actually went through (no ghost anims when the hook/token
+            -- isn't ready or a gate blocked the fire)
+            local fired = FireParry()
+            if fired then
+                _tbLastFire = os.clock()
+                if Config.TriggerBotAnimationFix then
+                    PlaySingleParryAnimation()
+                end
+            end
             break
         end
     end
@@ -2760,65 +2777,104 @@ do
         Backdrop.Text = ""
         Backdrop.AutoButtonColor = false
         Backdrop.ZIndex = 1
+        -- Backdrop only blocks input — only the X button closes this window
 
         local Frame = Instance.new("Frame")
         Frame.Parent = ScreenGui
         Frame.AnchorPoint = Vector2.new(0.5,0.5)
         Frame.Position = UDim2.new(0.5,0,0.5,0)
         Frame.Size = UDim2.new(0, 640, 0, 720)
-        Frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        Frame.BackgroundColor3 = NeverZen.Theme.WindowBackgroundColor
+        Frame.BackgroundTransparency = 0.07
         Frame.BorderSizePixel = 0
+        Frame.ClipsDescendants = true
+        Frame.Active = true
         Frame.ZIndex = 2
         local FrameCorner = Instance.new("UICorner")
-        FrameCorner.CornerRadius = UDim.new(0,6)
+        FrameCorner.CornerRadius = UDim.new(0,4)
         FrameCorner.Parent = Frame
         local FrameStroke = Instance.new("UIStroke")
-        FrameStroke.Color = Color3.fromRGB(55,55,55)
+        FrameStroke.Color = Color3.fromRGB(0,25,34)
+        FrameStroke.Transparency = 0.85
         FrameStroke.Parent = Frame
 
+        local Header = Instance.new("Frame")
+        Header.Parent = Frame
+        Header.BackgroundTransparency = 1
+        Header.Size = UDim2.new(1,0,0,45)
+        Header.Active = true
+        Header.ZIndex = 3
+
         local Title = Instance.new("TextLabel")
-        Title.Parent = Frame
+        Title.Parent = Header
         Title.BackgroundTransparency = 1
-        Title.Position = UDim2.new(0,20,0,14)
-        Title.Size = UDim2.new(1,-160,0,26)
+        Title.Position = UDim2.new(0,5,0,8)
+        Title.Size = UDim2.new(0,260,0,20)
         Title.Font = Enum.Font.GothamBold
-        Title.Text = "SELECT SWORD"
-        Title.TextColor3 = Color3.fromRGB(255,255,255)
-        Title.TextSize = 18
+        Title.Text = "SWORD CHANGER"
+        Title.TextColor3 = NeverZen.Theme.Hightlight
+        Title.TextSize = 17
         Title.TextXAlignment = Enum.TextXAlignment.Left
-        Title.ZIndex = 3
+        Title.ZIndex = 4
+        table.insert(NeverZen.HighlightUpdateFunctions, function()
+            Title.TextColor3 = NeverZen.Theme.Hightlight
+        end)
+
+        local SubTitleText = Instance.new("TextLabel")
+        SubTitleText.Parent = Header
+        SubTitleText.BackgroundTransparency = 1
+        SubTitleText.Position = UDim2.new(0,6,0,29)
+        SubTitleText.Size = UDim2.new(0,260,0,13)
+        SubTitleText.Font = Enum.Font.GothamMedium
+        SubTitleText.Text = "Pick a skin to display"
+        SubTitleText.TextColor3 = NeverZen.Theme.Hightlight
+        SubTitleText.TextSize = 10
+        SubTitleText.TextTransparency = 0.5
+        SubTitleText.TextXAlignment = Enum.TextXAlignment.Left
+        SubTitleText.ZIndex = 4
+        table.insert(NeverZen.HighlightUpdateFunctions, function()
+            SubTitleText.TextColor3 = NeverZen.Theme.Hightlight
+        end)
+
+        local HeaderLine = Instance.new("Frame")
+        HeaderLine.Parent = Frame
+        HeaderLine.BackgroundColor3 = NeverZen.Theme.LineColor
+        HeaderLine.BorderSizePixel = 0
+        HeaderLine.Position = UDim2.new(0,0,0,45)
+        HeaderLine.Size = UDim2.new(1,0,0,1)
+        HeaderLine.ZIndex = 3
 
         local FilterTag = Instance.new("TextLabel")
         FilterTag.Parent = Frame
         FilterTag.BackgroundTransparency = 1
         FilterTag.AnchorPoint = Vector2.new(1,0)
         FilterTag.Position = UDim2.new(1,-52,0,14)
-        FilterTag.Size = UDim2.new(0,360,0,22)
+        FilterTag.Size = UDim2.new(0,330,0,20)
         FilterTag.Font = Enum.Font.GothamMedium
         FilterTag.Text = ""
         FilterTag.TextColor3 = Color3.fromRGB(200,200,200)
         FilterTag.TextSize = 12
         FilterTag.TextXAlignment = Enum.TextXAlignment.Right
-        FilterTag.ZIndex = 3
+        FilterTag.ZIndex = 4
 
         local Close = Instance.new("TextButton")
-        Close.Parent = Frame
+        Close.Parent = Header
         Close.AnchorPoint = Vector2.new(1,0)
-        Close.Position = UDim2.new(1,-12,0,12)
-        Close.Size = UDim2.new(0,32,0,32)
-        Close.BackgroundColor3 = Color3.fromRGB(22,22,22)
+        Close.Position = UDim2.new(1,-10,0,8)
+        Close.Size = UDim2.new(0,29,0,29)
+        Close.BackgroundColor3 = NeverZen.Theme.BackgroundColor
         Close.BorderSizePixel = 0
         Close.Text = "X"
         Close.TextColor3 = Color3.fromRGB(255,255,255)
         Close.Font = Enum.Font.GothamBold
-        Close.TextSize = 15
-        Close.AutoButtonColor = true
-        Close.ZIndex = 3
+        Close.TextSize = 14
+        Close.AutoButtonColor = false
+        Close.ZIndex = 5
         local CloseCorner = Instance.new("UICorner")
         CloseCorner.CornerRadius = UDim.new(0,4)
         CloseCorner.Parent = Close
         local CloseStroke = Instance.new("UIStroke")
-        CloseStroke.Color = Color3.fromRGB(55,55,55)
+        CloseStroke.Color = NeverZen.Theme.StrokeColor2
         CloseStroke.Parent = Close
 
         local FAVORITES_FILE = "S14xFluent/favorites.json"
@@ -2850,16 +2906,16 @@ do
 
         local TabBar = Instance.new("Frame")
         TabBar.Parent = Frame
-        TabBar.Position = UDim2.new(0,20,0,50)
+        TabBar.Position = UDim2.new(0,20,0,55)
         TabBar.Size = UDim2.new(1,-40,0,34)
-        TabBar.BackgroundColor3 = Color3.fromRGB(12,12,12)
+        TabBar.BackgroundColor3 = NeverZen.Theme.BackgroundColor2
         TabBar.BorderSizePixel = 0
         TabBar.ZIndex = 3
         local TabBarCorner = Instance.new("UICorner")
         TabBarCorner.CornerRadius = UDim.new(0,4)
         TabBarCorner.Parent = TabBar
         local TabBarStroke = Instance.new("UIStroke")
-        TabBarStroke.Color = Color3.fromRGB(45,45,45)
+        TabBarStroke.Color = NeverZen.Theme.StrokeColor2
         TabBarStroke.Parent = TabBar
 
         local TabAllBtn = Instance.new("TextButton")
@@ -2878,13 +2934,25 @@ do
         local TabAllCorner = Instance.new("UICorner")
         TabAllCorner.CornerRadius = UDim.new(0,4)
         TabAllCorner.Parent = TabAllBtn
+        local TabAllUnderline = Instance.new("Frame")
+        TabAllUnderline.Parent = TabAllBtn
+        TabAllUnderline.AnchorPoint = Vector2.new(0.5,1)
+        TabAllUnderline.Position = UDim2.new(0.5,0,1,-3)
+        TabAllUnderline.Size = UDim2.new(1,-20,0,2)
+        TabAllUnderline.BackgroundColor3 = NeverZen.Theme.Hightlight
+        TabAllUnderline.BorderSizePixel = 0
+        TabAllUnderline.Visible = true
+        TabAllUnderline.ZIndex = 5
+        table.insert(NeverZen.HighlightUpdateFunctions, function()
+            TabAllUnderline.BackgroundColor3 = NeverZen.Theme.Hightlight
+        end)
 
         local TabFavBtn = Instance.new("TextButton")
         TabFavBtn.Parent = TabBar
         TabFavBtn.AnchorPoint = Vector2.new(1,0.5)
         TabFavBtn.Position = UDim2.new(1,0,0.5,0)
         TabFavBtn.Size = UDim2.new(0.5,-3,1,0)
-        TabFavBtn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+        TabFavBtn.BackgroundColor3 = Color3.fromRGB(10,10,10)
         TabFavBtn.BorderSizePixel = 0
         TabFavBtn.Text = "Favorites"
         TabFavBtn.TextColor3 = Color3.fromRGB(200,200,200)
@@ -2895,6 +2963,18 @@ do
         local TabFavCorner = Instance.new("UICorner")
         TabFavCorner.CornerRadius = UDim.new(0,4)
         TabFavCorner.Parent = TabFavBtn
+        local TabFavUnderline = Instance.new("Frame")
+        TabFavUnderline.Parent = TabFavBtn
+        TabFavUnderline.AnchorPoint = Vector2.new(0.5,1)
+        TabFavUnderline.Position = UDim2.new(0.5,0,1,-3)
+        TabFavUnderline.Size = UDim2.new(1,-20,0,2)
+        TabFavUnderline.BackgroundColor3 = NeverZen.Theme.Hightlight
+        TabFavUnderline.BorderSizePixel = 0
+        TabFavUnderline.Visible = false
+        TabFavUnderline.ZIndex = 5
+        table.insert(NeverZen.HighlightUpdateFunctions, function()
+            TabFavUnderline.BackgroundColor3 = NeverZen.Theme.Hightlight
+        end)
 
         local currentTab = "all"
 
@@ -2902,28 +2982,32 @@ do
             if currentTab == "all" then
                 TabAllBtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
                 TabAllBtn.TextColor3 = Color3.fromRGB(255,255,255)
-                TabFavBtn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+                TabFavBtn.BackgroundColor3 = Color3.fromRGB(10,10,10)
                 TabFavBtn.TextColor3 = Color3.fromRGB(180,180,180)
+                TabAllUnderline.Visible = true
+                TabFavUnderline.Visible = false
             else
-                TabAllBtn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+                TabAllBtn.BackgroundColor3 = Color3.fromRGB(10,10,10)
                 TabAllBtn.TextColor3 = Color3.fromRGB(180,180,180)
                 TabFavBtn.BackgroundColor3 = Color3.fromRGB(35,35,35)
                 TabFavBtn.TextColor3 = Color3.fromRGB(255,255,255)
+                TabAllUnderline.Visible = false
+                TabFavUnderline.Visible = true
             end
         end
 
         local Search = Instance.new("Frame")
         Search.Parent = Frame
-        Search.Position = UDim2.new(0,20,0,92)
-        Search.Size = UDim2.new(1,-40,0,38)
-        Search.BackgroundColor3 = Color3.fromRGB(15,15,15)
+        Search.Position = UDim2.new(0,20,0,97)
+        Search.Size = UDim2.new(1,-40,0,36)
+        Search.BackgroundColor3 = NeverZen.Theme.BackgroundColor
         Search.BorderSizePixel = 0
         Search.ZIndex = 3
         local SearchCorner = Instance.new("UICorner")
         SearchCorner.CornerRadius = UDim.new(0,4)
         SearchCorner.Parent = Search
         local SearchStroke = Instance.new("UIStroke")
-        SearchStroke.Color = Color3.fromRGB(55,55,55)
+        SearchStroke.Color = NeverZen.Theme.StrokeColor2
         SearchStroke.Parent = Search
 
         local SearchBox = Instance.new("TextBox")
@@ -2943,9 +3027,9 @@ do
 
         local Scroller = Instance.new("ScrollingFrame")
         Scroller.Parent = Frame
-        Scroller.Position = UDim2.new(0,20,0,142)
-        Scroller.Size = UDim2.new(1,-40,1,-162)
-        Scroller.BackgroundColor3 = Color3.fromRGB(10,10,10)
+        Scroller.Position = UDim2.new(0,20,0,143)
+        Scroller.Size = UDim2.new(1,-40,1,-163)
+        Scroller.BackgroundColor3 = NeverZen.Theme.SectionColor
         Scroller.BorderSizePixel = 0
         Scroller.CanvasSize = UDim2.new(0,0,0,0)
         Scroller.ScrollBarThickness = 6
@@ -2955,7 +3039,7 @@ do
         ScrollCorner.CornerRadius = UDim.new(0,4)
         ScrollCorner.Parent = Scroller
         local ScrollStroke = Instance.new("UIStroke")
-        ScrollStroke.Color = Color3.fromRGB(40,40,40)
+        ScrollStroke.Color = NeverZen.Theme.StrokeColor
         ScrollStroke.Parent = Scroller
 
         local ListLayout = Instance.new("UIListLayout")
@@ -3130,13 +3214,16 @@ do
                 local Row = Instance.new("Frame")
                 Row.Parent = Scroller
                 Row.Size = UDim2.new(1,-14,0,34)
-                Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+                Row.BackgroundColor3 = Color3.fromRGB(12,12,12)
                 Row.BorderSizePixel = 0
                 Row.ZIndex = 4
 
                 local RowCorner = Instance.new("UICorner")
                 RowCorner.CornerRadius = UDim.new(0,4)
                 RowCorner.Parent = Row
+                local RowStroke = Instance.new("UIStroke")
+                RowStroke.Color = Color3.fromRGB(28,28,28)
+                RowStroke.Parent = Row
 
                 local NameBtn = Instance.new("TextButton")
                 NameBtn.Parent = Row
@@ -3182,10 +3269,10 @@ do
                 favStroke.Parent = FavBtn
 
                 NameBtn.MouseEnter:Connect(function()
-                    Row.BackgroundColor3 = Color3.fromRGB(45,45,45)
+                    Row.BackgroundColor3 = Color3.fromRGB(30,30,30)
                 end)
                 NameBtn.MouseLeave:Connect(function()
-                    Row.BackgroundColor3 = Color3.fromRGB(18,18,18)
+                    Row.BackgroundColor3 = Color3.fromRGB(12,12,12)
                 end)
                 NameBtn.MouseButton1Click:Connect(function()
                     if onPickCallback then pcall(onPickCallback, sword) end
@@ -3253,17 +3340,35 @@ do
         Close.MouseButton1Click:Connect(function()
             ScreenGui.Enabled = false
         end)
-        Backdrop.MouseButton1Click:Connect(function()
-            ScreenGui.Enabled = false
+        Close.MouseEnter:Connect(function()
+            Close.BackgroundColor3 = Color3.fromRGB(64,28,34)
+        end)
+        Close.MouseLeave:Connect(function()
+            Close.BackgroundColor3 = NeverZen.Theme.BackgroundColor
         end)
 
-        UserInputService.InputBegan:Connect(function(input, gpe)
-            if gpe then return end
-            if not ScreenGui.Enabled then return end
-            if input.KeyCode == Enum.KeyCode.Escape then
-                ScreenGui.Enabled = false
+        -- Window is draggable from the header; only the X button closes it
+        local dragToggle = false
+        local dragStart, startPos = nil, nil
+        local function beginDrag(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                dragToggle = true
+                dragStart = input.Position
+                startPos = Frame.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then dragToggle = false end
+                end)
             end
-        end)
+        end
+        Header.InputBegan:Connect(beginDrag)
+        Title.InputBegan:Connect(beginDrag)
+        SubTitleText.InputBegan:Connect(beginDrag)
+        NeverZen:Track(UserInputService.InputChanged:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragToggle then
+                local delta = input.Position - dragStart
+                Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end))
 
         updateTabVisuals()
         Rebuild("")
@@ -3275,6 +3380,7 @@ do
                 SearchBox.Text = ""
                 updateTabVisuals()
                 Rebuild("")
+                Frame.Position = UDim2.new(0.5,0,0.5,0)
                 ScreenGui.Enabled = true
             end,
             Close = function() ScreenGui.Enabled = false end,
@@ -4371,6 +4477,10 @@ local TBToggle = TBSection:AddToggle({
     Callback = function(v)
         Config.TriggerBot = v
         saveConfig()
+        if not v then
+            -- don't leave the character frozen in a grab pose
+            pcall(StopParryGrabTracks)
+        end
         NZNotification.new("Triggerbot", v and "ON" or "OFF", 2)
     end,
 })
@@ -4385,6 +4495,20 @@ local TBInfDetect = TBSection:AddToggle({
     Name = "Infinity Detection",
     Default = Config.TriggerBotInfinityDetection,
     Callback = function(v) Config.TriggerBotInfinityDetection = v saveConfig() end,
+})
+
+TBSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
+
+local TBDistanceLabel = TBSection:AddLabel("Distance: " .. tostring(Config.TriggerBotDistance) .. "x")
+
+local TBDistanceSlider = TBSection:AddSlider({
+    Name = "Distance", Min = 1, Max = 1.5, Round = 2, Step = 0.05, Type = "x",
+    Default = Config.TriggerBotDistance,
+    Callback = function(v)
+        Config.TriggerBotDistance = v
+        TBDistanceLabel:SetValue("Distance: " .. tostring(v) .. "x")
+        saveConfig()
+    end,
 })
 
 TBSection:AddDivider({ Color = Color3.fromRGB(50,50,50), Height = 1 })
@@ -4667,6 +4791,8 @@ SetSection:AddButton({
         pcall(function() TBToggle:SetValue(Config.TriggerBot) end)
         pcall(function() TBAnimFix:SetValue(Config.TriggerBotAnimationFix) end)
         pcall(function() TBInfDetect:SetValue(Config.TriggerBotInfinityDetection) end)
+        pcall(function() TBDistanceSlider:SetValue(Config.TriggerBotDistance) end)
+        pcall(function() TBDistanceLabel:SetValue("Distance: " .. tostring(Config.TriggerBotDistance) .. "x") end)
         pcall(function() HeadlessV1Toggle:SetValue(Config.HeadlessMode == "V1") end)
         pcall(function() HeadlessV2Toggle:SetValue(Config.HeadlessMode == "V2") end)
         pcall(function() KorbloxToggle:SetValue(Config.Korblox) end)
@@ -4747,7 +4873,6 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
--- ========== START ==========
 if Config.Spamming then PlayParryAnimation() end
 
 NZNotification.new("INFINITE TSUKUYOMI", "Loaded. Parry once to hook. " ..
